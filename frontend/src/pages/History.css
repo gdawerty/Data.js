@@ -1,0 +1,10 @@
+.accordion-button{
+    background-color: transparent;
+    background-image: none;
+    color: #000000;
+}
+
+.accordion-button:not(.collapsed){
+    background-color: transparent;
+    color: #000000;
+}

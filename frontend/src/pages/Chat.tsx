@@ -116,7 +116,7 @@ const Chat: React.FC<ChatProps> = ({ isDarkMode }) => {
       >
         {!isChatStarted ? (
           <div>
-            <p style={{ textAlign: "center", color: "#666", marginBottom: "20px" }}>
+            <p style={{ textAlign: "center", color: isDarkMode ? "#aaa" : "#666", marginBottom: "20px" }}>
               Type a message or choose an example:
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
@@ -128,7 +128,7 @@ const Chat: React.FC<ChatProps> = ({ isDarkMode }) => {
                     padding: "8px 16px",
                     borderRadius: "4px",
                     border: "none",
-                    backgroundColor: "#007bff",
+                    backgroundColor: isDarkMode ? "#1d222b" : "#007bff",
                     color: "#fff",
                     cursor: "pointer",
                   }}
@@ -142,13 +142,23 @@ const Chat: React.FC<ChatProps> = ({ isDarkMode }) => {
                 }}
               >
                 <Form.Control
+                  className={isDarkMode ? "placeholder-dark" : "placeholder-light"}
+                  style={{
+                    backgroundColor: isDarkMode ? "#333" : "#f9f9f9",
+                    border: isDarkMode ? "1px solid #666" : "1px solid #ccc",
+                    color: isDarkMode ? "#fff" : "#000",
+                  }}
                   type="text"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
                   placeholder="Type a message..."
                 />
-                <Button onClick={() => handleSendMessage()} disabled={isLoading || !inputValue.trim()}>
+                <Button
+                  onClick={() => handleSendMessage()}
+                  disabled={isLoading || !inputValue.trim()}
+                  variant={isDarkMode ? "secondary" : "primary"}
+                >
                   Send
                 </Button>
               </InputGroup>
@@ -178,12 +188,7 @@ const Chat: React.FC<ChatProps> = ({ isDarkMode }) => {
             </div>
           ))
         )}
-        {isLoading && 
-        <div style={{ textAlign: "center",
-        color: isDarkMode ? "#aaa" : "#666"
-        }}>
-          Loading...</div>
-          }
+        {isLoading && <div style={{ textAlign: "center", color: isDarkMode ? "#aaa" : "#666" }}>Loading...</div>}
       </div>
       {isChatStarted && (
         <div style={{ display: "flex", width: "999px" }}>

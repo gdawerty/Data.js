@@ -31,7 +31,7 @@ const App: React.FC = () => {
               <Route path="/dashboard" element={<Dashboard isDarkMode={isDarkMode} />} />
               <Route path="/chat" element={<Chat isDarkMode={isDarkMode} />} />
               <Route path="/insights" element={<Insights />} />
-              <Route path="/history" element={<History />} />
+              <Route path="/history" element={<History isDarkMode={isDarkMode} />} />
               <Route path="/planning" element={<Planning />} />
             </Routes>
           </Router>

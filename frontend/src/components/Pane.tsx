@@ -42,6 +42,7 @@ const Pane: React.FC<PaneProps> = ({ title, children, width, isDarkMode }) => {
         height: 400,
         backgroundColor: styles.card.backgroundColor,
         color: styles.card.color,
+        marginBottom: "1rem",
       }}
     >
       <Card.Header style={styles.header}>{title}</Card.Header>

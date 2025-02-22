@@ -4,6 +4,7 @@ import LineChart from "../components/panes/LineChart";
 import BarChart from "../components/panes/BarChart";
 import PieChart from "../components/panes/PieChart";
 import Insight from "../components/panes/Insight";
+import RecentTransactions from "../components/panes/RecentTransactions";
 interface DashboardProps {
   isDarkMode: boolean;
 }
@@ -14,11 +15,11 @@ const Dashboard: React.FC<DashboardProps> = ({ isDarkMode }) => {
       <h1 className="my-4">Dashboard</h1>
       <Row>
         <Col
-          style={{
-            paddingBottom: "1rem",
-          }}
         >
           <Insight isDarkMode={isDarkMode} />
+        </Col>
+        <Col>
+          <RecentTransactions isDarkMode={isDarkMode} title="Recent Transactions" />
         </Col>
       </Row>
       <Row>
