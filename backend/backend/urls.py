@@ -15,8 +15,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from previewApp.views import index, chatbot  # import your index view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', index, name='index'),  # This maps the homepage to your index view
+    path('chatbot/', chatbot, name="finsight"),
+    # Alternatively, you could add path('myapp/', include('myapp.urls')) if you set up app-level urls.
 ]
