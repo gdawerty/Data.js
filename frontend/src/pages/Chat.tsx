@@ -38,7 +38,7 @@ const Chat: React.FC<ChatProps> = ({ isDarkMode }) => {
 
     try {
       // Simulate a fetch request to an API
-      const response = await new Promise((resolve) => {
+      const response:any = await new Promise((resolve) => {
         setTimeout(() => {
           resolve({
             ok: true,
