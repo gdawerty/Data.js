@@ -11,7 +11,11 @@ interface DashboardProps {
 const Dashboard: React.FC<DashboardProps> = ({ isDarkMode }) => {
   return (
     <Container className={isDarkMode ? "text-white" : "text-dark"} fluid>
+<<<<<<< HEAD
       <h1 className="my-4">Dashboard</h1>
+=======
+      <h1 className="my-4">D`ashboard</h1>
+>>>>>>> be95f37 (added dashboard)
       <Row>
         <Col
           style={{
