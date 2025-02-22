@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { InputGroup, Form, Button } from "react-bootstrap";
 import "./Chat.css";
+import LoadingIndicator from "../components/LoadingIndicator";
 interface ChatProps 
 {
   isDarkMode: boolean;
@@ -191,7 +192,7 @@ const Chat: React.FC<ChatProps> = ({ isDarkMode }) => {
                 textAlign: message.sender === "user" ? "right" : "left",
                 marginBottom: "10px",
                 width: "100%",
-                whiteSpace: "pre-wrap"
+                whiteSpace: "pre-wrap",
               }}
             >
               <div
@@ -208,7 +209,7 @@ const Chat: React.FC<ChatProps> = ({ isDarkMode }) => {
             </div>
           ))
         )}
-        {isLoading && <div style={{ textAlign: "center", color: isDarkMode ? "#aaa" : "#666" }}>Loading...</div>}
+        {isLoading && <LoadingIndicator isDarkMode={isDarkMode} />}
       </div>
       {isChatStarted && (
         <div style={{ display: "flex", width: "999px" }}>
