@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv("DJANGO_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['3.145.10.5']
 
 
 # Allow requests only from the specified origin (e.g., your React frontend on localhost:3000)
