@@ -14,6 +14,7 @@ const CustomNavbar: React.FC<NavbarProps> = ({ toggleTheme, isDarkMode }) => {
       variant={isDarkMode ? "dark gray" : "light"}
       className="shadow-sm"
       expand="lg"
+      fixed="top"
     >
       <Navbar.Brand style={{ paddingLeft: "20px" }} href="/">
         My App

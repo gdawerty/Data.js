@@ -8,7 +8,7 @@ interface FooterProps {
 const Footer: React.FC<FooterProps> = ({ isDarkMode }) => {
   return (
     <Navbar 
-    fixed="bottom" bg={isDarkMode ? "dark" : "light"} variant={isDarkMode ? "dark" : "light"}
+    bg={isDarkMode ? "dark" : "light"} variant={isDarkMode ? "dark" : "light"}
     style={{ maxHeight: "30px"}}>
     
       <Navbar.Text style={{paddingLeft: "10px"}}>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Accordion, Form, Button, Card, ListGroup, Badge } from "react-bootstrap";
+import { Accordion, Form, Button, Card, ListGroup, Badge, Modal } from "react-bootstrap";
 import "./History.css";
 
 interface Transaction {
@@ -26,6 +26,15 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
     type: null,
     startDate: null,
     endDate: null,
+  });
+
+  const [showModal, setShowModal] = useState(false); // State for modal visibility
+  const [newTransaction, setNewTransaction] = useState<Partial<Transaction>>({
+    dateTime: new Date().toISOString(),
+    amount: 0,
+    isExpense: true,
+    type: "food",
+    description: "",
   });
 
   const transactions: Transaction[] = [
@@ -95,6 +104,27 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
     },
   ];
 
+  const handleShowModal = () => setShowModal(true);
+
+  // Handle closing the modal
+  const handleCloseModal = () => setShowModal(false);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setNewTransaction((prev) => ({
+      ...prev,
+      [name]: name === "amount" ? parseFloat(value) : value,
+    }));
+  };
+
+  // Handle form submission
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Add the new transaction to the list (for now, just log it)
+    console.log("New Transaction:", newTransaction);
+    handleCloseModal(); // Close the modal
+  };
+
   // Get the earliest transaction date
   const earliestDate = new Date(Math.min(...transactions.map((t) => new Date(t.dateTime).getTime())));
 
@@ -143,7 +173,117 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
 
   return (
     <div style={{ padding: "20px" }}>
-      <h1>History</h1>
+      <div className="d-flex justify-content-between align-items-center">
+        <h1>History</h1>
+        <Button variant="primary" onClick={handleShowModal} className="mb-4">
+          Add New Transaction
+        </Button>
+      </div>
+
+      <Modal show={showModal} onHide={handleCloseModal} centered size="lg">
+        <Modal.Header closeButton className={isDarkMode ? "bg-dark text-light" : ""}>
+          <Modal.Title>Add New Transaction</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className={isDarkMode ? "bg-dark text-light" : ""}>
+          <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3">
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                type="text"
+                name="description"
+                value={newTransaction.description}
+                onChange={handleInputChange}
+                required
+                className={isDarkMode ? "bg-secondary text-light" : ""}
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Amount</Form.Label>
+              <Form.Control
+                type="number"
+                name="amount"
+                value={newTransaction.amount}
+                onChange={handleInputChange}
+                required
+                className={isDarkMode ? "bg-secondary text-light" : ""}
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Type</Form.Label>
+              <Form.Select
+                name="type"
+                value={newTransaction.type}
+                onChange={handleInputChange}
+                required
+                className={isDarkMode ? "bg-secondary text-light" : ""}
+              >
+                <option value="food">Food</option>
+                <option value="transportation">Transportation</option>
+                <option value="salary">Salary</option>
+                <option value="shopping">Shopping</option>
+                <option value="gift">Gift</option>
+              </Form.Select>
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Category</Form.Label>
+              <Form.Select
+                name="isExpense"
+                value={newTransaction.isExpense ? "expense" : "income"}
+                onChange={(e) =>
+                  setNewTransaction((prev) => ({
+                    ...prev,
+                    isExpense: e.target.value === "expense",
+                  }))
+                }
+                required
+                className={isDarkMode ? "bg-secondary text-light" : ""}
+              >
+                <option value="expense">Expense</option>
+                <option value="income">Income</option>
+              </Form.Select>
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Date and Time</Form.Label>
+              <Form.Control
+                type="datetime-local"
+                name="dateTime"
+                value={newTransaction.dateTime}
+                onChange={handleInputChange}
+                required
+                className={isDarkMode ? "bg-secondary text-light" : ""}
+              />
+            </Form.Group>
+
+            <Button variant="primary" type="submit">
+              Add Transaction
+            </Button>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer className={isDarkMode ? "bg-dark text-light" : ""}>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Grey Overlay */}
+      {showModal && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.5)", // Grey overlay
+            zIndex: 1040, // Ensure it's below the modal (Bootstrap modals have z-index 1050)
+          }}
+        />
+      )}
 
       <Card className={`mb-4 ${isDarkMode ? "bg-dark text-light" : "bg-light text-dark"}`}>
         <Card.Body>
@@ -288,7 +428,9 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
                                       style={{
                                         color: isDarkMode ? "#fff" : "#000",
                                       }}
-                                    >{day}</span>
+                                    >
+                                      {day}
+                                    </span>
                                   </Accordion.Header>
                                   <Accordion.Body className={isDarkMode ? "bg-dark text-light" : ""}>
                                     <ListGroup variant={isDarkMode ? "flush" : ""}>

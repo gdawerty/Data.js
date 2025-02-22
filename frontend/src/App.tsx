@@ -26,7 +26,7 @@ const App: React.FC = () => {
       <CustomNavbar toggleTheme={toggleTheme} isDarkMode={isDarkMode} />
       <div className="d-flex">
         <Sidebar isDarkMode={isDarkMode} />
-        <main className="flex-grow-1 p-3" style={{ backgroundColor: isDarkMode ? "#1d222b" : "#eef1fb" }}>
+        <main className="flex-grow-1 p-3" style={{ backgroundColor: isDarkMode ? "#1d222b" : "#eef1fb", marginTop: "30px"}}>
           <Router>
             <Routes>
               <Route path="/" element={<Dashboard isDarkMode={isDarkMode} />} />

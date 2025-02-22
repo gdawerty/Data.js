@@ -10,7 +10,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isDarkMode }) => {
       className={isDarkMode ? "flex-column bg-dark text-white" : "flex-column bg-light text-dark"}
       style={{ height: "100vh" }}
     >
-      <Nav.Link href="/dashboard">
+      <Nav.Link href="/dashboard" style={{marginTop: "60px"}}>
         <Button variant={isDarkMode ? "outline-light" : "outline-dark"}>
           <Dashboard />
         </Button>
