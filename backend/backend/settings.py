@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv  # accessing os env vars
+import os
+
+load_dotenv()
 
 import os
 from dotenv import load_dotenv
@@ -24,13 +28,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-4j8rsyug=^r=*12v7&capukwozd)we)k@ywp-o(c-e-5t6z*e&'
+SECRET_KEY = os.getenv("DJANGO_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [os.getenv("HOST")]
+ALLOWED_HOSTS = [os.getenv("HOST"), '127.0.0.1']
 
+
+# Allow requests only from the specified origin (e.g., your React frontend on localhost:3000)
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+]
 
 # Application definition
 
@@ -41,6 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'storages' #for amazon s3 storage
 ]
 
 MIDDLEWARE = [
@@ -50,7 +64,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware'
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -135,8 +149,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+MEDIA_URL = 'media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# AWS Access Keys
+AWS_ACCESS_KEY_ID = 'your_access_key_id'
+AWS_SECRET_ACCESS_KEY = 'your_secret_access_key\v'
+AWS_STORAGE_BUCKET_NAME = 'your_bucket_name'
+AWS_S3_REGION_NAME = 'your_bucket_region' 
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_S3_FILE_OVERWRITE = False

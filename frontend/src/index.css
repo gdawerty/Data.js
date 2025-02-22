@@ -30,6 +30,15 @@ body {
   min-height: 100vh;
 }
 
+.bg-light-gray {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+body.dark-mode {
+  background-color: #121212;
+  color: #ffffff;
+}
+
 h1 {
   font-size: 3.2em;
   line-height: 1.1;

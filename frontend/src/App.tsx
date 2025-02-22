@@ -1,35 +1,49 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from "react";
+import CustomNavbar from "./components/NavBar";
+import Sidebar from "./components/SideBar";
+// import Footer from "./components/Footer";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
 
-function App() {
-  const [count, setCount] = useState(0)
+import Dashboard from "./pages/Dashboard";
+import Chat from "./pages/Chat";
+import History from "./pages/History";
+import Insights from "./pages/Insights";
+import Planning from "./pages/Planning";
+import About from "./pages/About";
+import Footer from "./components/Footer";
+
+const App: React.FC = () => {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode);
+    document.body.classList.toggle("dark-mode", !isDarkMode);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div className={isDarkMode ? "bg-dark text-white" : "bg-light text-dark"}>
+      <CustomNavbar toggleTheme={toggleTheme} isDarkMode={isDarkMode} />
+      <div className="d-flex">
+        <Sidebar isDarkMode={isDarkMode} />
+        <main className="flex-grow-1 p-3" style={{ backgroundColor: isDarkMode ? "#1d222b" : "#eef1fb" }}>
+          <Router>
+            <Routes>
+              <Route path="/" element={<Dashboard isDarkMode={isDarkMode} />} />
 
-export default App
+              <Route path="/dashboard" element={<Dashboard isDarkMode={isDarkMode} />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/chat" element={<Chat isDarkMode={isDarkMode} />} />
+              <Route path="/insights" element={<Insights />} />
+              <Route path="/history" element={<History isDarkMode={isDarkMode} />} />
+              <Route path="/planning" element={<Planning />} />
+            </Routes>
+          </Router>
+        </main>
+      </div>
+      <Footer isDarkMode={isDarkMode} />
+    </div>
+  );
+};
+
+export default App;
