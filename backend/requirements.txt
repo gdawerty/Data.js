@@ -1,0 +1,12 @@
+anthropic
+dotenv
+fastapi
+pydantic
+openai
+boto3
+django
+django-cors-headers
+django-storages
+pymysql
+mysql
+mysqlclient
