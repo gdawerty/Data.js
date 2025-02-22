@@ -1,0 +1,7 @@
+.placeholder-dark::placeholder {
+  color: #aaa;
+}
+
+.placeholder-light::placeholder {
+  color: #666;
+}
