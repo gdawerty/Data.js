@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import CustomNavbar from "./components/NavBar";
 import Sidebar from "./components/SideBar";
-import Footer from "./components/Footer";
+// import Footer from "./components/Footer";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
