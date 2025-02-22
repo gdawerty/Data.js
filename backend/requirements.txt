@@ -1,1 +1,6 @@
-openai>=0.27.0
+anthropic
+dotenv
+fastapi
+pydantic
+openai
+boto3
