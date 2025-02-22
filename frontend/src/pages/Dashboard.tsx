@@ -1,10 +1,11 @@
-import React from "react";
+import React from 'react';
+import { Container, Row, Col } from 'react-bootstrap';
 
-const Dashboard = () => {
+const Dashboard: React.FC = () => {
   return (
-    <div>
-      <h1>Dashboard</h1>
-    </div>
+    <h1>
+      asdf
+    </h1>
   );
 };
 
