@@ -29,12 +29,16 @@ SECRET_KEY = os.getenv("DJANGO_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['3.145.10.5']
+ALLOWED_HOSTS = ['3.145.10.5', 'localhost']
 
 
 # Allow requests only from the specified origin (e.g., your React frontend on localhost:3000)
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5174",
+    "http://localhost:5173",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
 ]
 
 # Application definition

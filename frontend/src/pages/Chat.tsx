@@ -49,7 +49,7 @@ const Chat: React.FC<ChatProps> = ({ isDarkMode }) => {
       //   }, 1000);
       // });
       console.log("allMessages", allMessages);
-      const response = await fetch("https://example.com", {
+      const response = await fetch("http://localhost:8000/api/chatbot/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

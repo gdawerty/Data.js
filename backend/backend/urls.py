@@ -16,11 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from previewApp.views import index, chatbot  # import your index view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', index, name='index'),  # This maps the homepage to your index view
-    path('chatbot/', chatbot, name="finsight"),
+    path('', include('chatbot.urls')),
     # Alternatively, you could add path('myapp/', include('myapp.urls')) if you set up app-level urls.
 ]
