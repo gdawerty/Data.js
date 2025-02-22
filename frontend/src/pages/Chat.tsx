@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { InputGroup, Form, Button } from "react-bootstrap";
 import "./Chat.css";
 import LoadingIndicator from "../components/LoadingIndicator";
-interface ChatProps 
-{
+
+interface ChatProps {
   isDarkMode: boolean;
 }
 
@@ -12,9 +12,11 @@ const Chat: React.FC<ChatProps> = ({ isDarkMode }) => {
   const [messages, setMessages] = useState<Array<{ text: string; sender: "user" | "bot" }>>([]); // Chat history
   const [isLoading, setIsLoading] = useState<boolean>(false); // Loading state
   const [isChatStarted, setIsChatStarted] = useState<boolean>(false); // Track if the chat has started
+  const [botMessage, setBotMessage] = useState<string>(""); // Current bot message being displayed word by word
 
-  // Ref for the chat container
+  // Refs
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Automatically scroll to the bottom when a new message is added
   useEffect(() => {
@@ -24,14 +26,19 @@ const Chat: React.FC<ChatProps> = ({ isDarkMode }) => {
         behavior: "smooth",
       });
     }
+  }, [messages, botMessage]);
+
+  // Focus on the input field after a message is submitted
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   }, [messages]);
 
   // Handle sending a message
   const handleSendMessage = async (message?: string) => {
     const userMessage = message || inputValue;
     if (!userMessage.trim()) return; // Ignore empty messages
-
-    const allMessages = [...messages, { text: userMessage, sender: "user" }];
 
     // Add the user's message to the chat history
     setMessages((prev) => [...prev, { text: userMessage, sender: "user" }]);
@@ -40,28 +47,18 @@ const Chat: React.FC<ChatProps> = ({ isDarkMode }) => {
     setIsChatStarted(true); // Expand the chat UI
 
     try {
-      // Simulate a fetch request to an API
-      // const response:any = await new Promise((resolve) => {
-      //   setTimeout(() => {
-      //     resolve({
-      //       ok: true,
-      //       json: async () => ({ response: "This is a response from the bot" }),
-      //     });
-      //   }, 1000);
-      // });
-
-      // Convert the allmessages array to a string in the format "user: message\nbot: message\nuser: message"
+      // Convert the allMessages array to a string in the format "user: message\nbot: message\nuser: message"
       const allMessages = messages.map((message) => `${message.sender}: ${message.text}`).join("\n");
-      
+
       const response = await fetch("http://localhost:8000/api/chatbot/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         mode: "cors",
-        body: JSON.stringify({ 
-          "prompt": allMessages,
-         }),
+        body: JSON.stringify({
+          prompt: allMessages,
+        }),
       });
 
       if (!response.ok) {
@@ -70,11 +67,22 @@ const Chat: React.FC<ChatProps> = ({ isDarkMode }) => {
       }
 
       const data = await response.json();
-
       console.log("RESPONSE", data);
 
-      // Add the bot's response to the chat history
-      setMessages((prev) => [...prev, { text: data.response, sender: "bot" }]);
+      // Display the bot's response one word at a time
+      const botResponse = data.response;
+      const words = botResponse.split(" ");
+      let currentMessage = "";
+
+      for (let i = 0; i < words.length; i++) {
+        currentMessage += words[i] + " ";
+        setBotMessage(currentMessage.trim());
+        await new Promise((resolve) => setTimeout(resolve, 100)); // Delay between words
+      }
+
+      // Add the full bot message to the chat history
+      setMessages((prev) => [...prev, { text: botResponse, sender: "bot" }]);
+      setBotMessage(""); // Clear the bot message
     } catch (error) {
       console.error("Error:", error);
       // Add an error message to the chat history
@@ -89,7 +97,6 @@ const Chat: React.FC<ChatProps> = ({ isDarkMode }) => {
     if (message.text === "Failed to fetch response. Please try again.") {
       color = "red";
     } else if (message.sender === "user") {
-      // color = "#007bff";
       color = isDarkMode ? "#1d222b" : "#007bff";
     } else {
       color = "#e9ecef";
@@ -120,7 +127,6 @@ const Chat: React.FC<ChatProps> = ({ isDarkMode }) => {
         style={{
           height: isChatStarted ? "500px" : "300px",
           width: isChatStarted ? "1000px" : "auto",
-          // border: "1px solid #ccc",
           border: isDarkMode ? "1px solid #666" : "1px solid #ccc",
           borderRadius: "8px",
           padding: "10px",
@@ -162,6 +168,7 @@ const Chat: React.FC<ChatProps> = ({ isDarkMode }) => {
                 }}
               >
                 <Form.Control
+                  ref={inputRef} // Attach the ref to the input field
                   className={isDarkMode ? "placeholder-dark" : "placeholder-light"}
                   style={{
                     backgroundColor: isDarkMode ? "#333" : "#f9f9f9",
@@ -185,29 +192,53 @@ const Chat: React.FC<ChatProps> = ({ isDarkMode }) => {
             </div>
           </div>
         ) : (
-          messages.map((message, index) => (
-            <div
-              key={index}
-              style={{
-                textAlign: message.sender === "user" ? "right" : "left",
-                marginBottom: "10px",
-                width: "100%",
-                whiteSpace: "pre-wrap",
-              }}
-            >
+          <>
+            {messages.map((message, index) => (
               <div
+                key={index}
                 style={{
-                  display: "inline-block",
-                  padding: "8px 12px",
-                  borderRadius: "8px",
-                  backgroundColor: getBotResponseColor(message),
-                  color: message.sender === "user" ? "#fff" : "#000",
+                  textAlign: message.sender === "user" ? "right" : "left",
+                  marginBottom: "10px",
+                  width: "100%",
+                  whiteSpace: "pre-wrap",
                 }}
               >
-                {message.text}
+                <div
+                  style={{
+                    display: "inline-block",
+                    padding: "8px 12px",
+                    borderRadius: "8px",
+                    backgroundColor: getBotResponseColor(message),
+                    color: message.sender === "user" ? "#fff" : "#000",
+                  }}
+                >
+                  {message.text}
+                </div>
               </div>
-            </div>
-          ))
+            ))}
+            {botMessage && (
+              <div
+                style={{
+                  textAlign: "left",
+                  marginBottom: "10px",
+                  width: "100%",
+                  whiteSpace: "pre-wrap",
+                }}
+              >
+                <div
+                  style={{
+                    display: "inline-block",
+                    padding: "8px 12px",
+                    borderRadius: "8px",
+                    backgroundColor: "#e9ecef",
+                    color: "#000",
+                  }}
+                >
+                  {botMessage}
+                </div>
+              </div>
+            )}
+          </>
         )}
         {isLoading && <LoadingIndicator isDarkMode={isDarkMode} />}
       </div>
@@ -215,6 +246,7 @@ const Chat: React.FC<ChatProps> = ({ isDarkMode }) => {
         <div style={{ display: "flex", width: "999px" }}>
           <InputGroup>
             <Form.Control
+              ref={inputRef} // Attach the ref to the input field
               disabled={isLoading}
               className={isDarkMode ? "placeholder-dark" : "placeholder-light"}
               style={{
