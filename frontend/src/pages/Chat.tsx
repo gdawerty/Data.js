@@ -191,6 +191,7 @@ const Chat: React.FC<ChatProps> = ({ isDarkMode }) => {
                 textAlign: message.sender === "user" ? "right" : "left",
                 marginBottom: "10px",
                 width: "100%",
+                whiteSpace: "pre-wrap"
               }}
             >
               <div
