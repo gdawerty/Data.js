@@ -48,20 +48,29 @@ const Chat: React.FC<ChatProps> = ({ isDarkMode }) => {
       //     });
       //   }, 1000);
       // });
-      console.log("allMessages", allMessages);
+
+      // Convert the allmessages array to a string in the format "user: message\nbot: message\nuser: message"
+      const allMessages = messages.map((message) => `${message.sender}: ${message.text}`).join("\n");
+      
       const response = await fetch("http://localhost:8000/api/chatbot/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ allMessages }),
+        mode: "cors",
+        body: JSON.stringify({ 
+          "prompt": allMessages,
+         }),
       });
 
       if (!response.ok) {
+        console.log(response);
         throw new Error("Failed to fetch response");
       }
 
       const data = await response.json();
+
+      console.log("RESPONSE", data);
 
       // Add the bot's response to the chat history
       setMessages((prev) => [...prev, { text: data.response, sender: "bot" }]);
