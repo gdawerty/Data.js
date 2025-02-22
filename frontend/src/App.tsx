@@ -10,6 +10,8 @@ import Chat from "./pages/Chat";
 import History from "./pages/History";
 import Insights from "./pages/Insights";
 import Planning from "./pages/Planning";
+import About from "./pages/About";
+import Footer from "./components/Footer";
 
 const App: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -28,7 +30,9 @@ const App: React.FC = () => {
           <Router>
             <Routes>
               <Route path="/" element={<Dashboard isDarkMode={isDarkMode} />} />
+
               <Route path="/dashboard" element={<Dashboard isDarkMode={isDarkMode} />} />
+              <Route path="/about" element={<About />} />
               <Route path="/chat" element={<Chat isDarkMode={isDarkMode} />} />
               <Route path="/insights" element={<Insights />} />
               <Route path="/history" element={<History isDarkMode={isDarkMode} />} />
@@ -37,7 +41,7 @@ const App: React.FC = () => {
           </Router>
         </main>
       </div>
-      {/* <Footer isDarkMode={isDarkMode} /> */}
+      <Footer isDarkMode={isDarkMode} />
     </div>
   );
 };

@@ -30,6 +30,8 @@ const Chat: React.FC<ChatProps> = ({ isDarkMode }) => {
     const userMessage = message || inputValue;
     if (!userMessage.trim()) return; // Ignore empty messages
 
+    const allMessages = [...messages, { text: userMessage, sender: "user" }];
+
     // Add the user's message to the chat history
     setMessages((prev) => [...prev, { text: userMessage, sender: "user" }]);
     setInputValue(""); // Clear the input field
@@ -38,13 +40,21 @@ const Chat: React.FC<ChatProps> = ({ isDarkMode }) => {
 
     try {
       // Simulate a fetch request to an API
-      const response:any = await new Promise((resolve) => {
-        setTimeout(() => {
-          resolve({
-            ok: true,
-            json: async () => ({ response: "This is a response from the bot" }),
-          });
-        }, 1000);
+      // const response:any = await new Promise((resolve) => {
+      //   setTimeout(() => {
+      //     resolve({
+      //       ok: true,
+      //       json: async () => ({ response: "This is a response from the bot" }),
+      //     });
+      //   }, 1000);
+      // });
+      console.log("allMessages", allMessages);
+      const response = await fetch("https://example.com", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ allMessages }),
       });
 
       if (!response.ok) {
