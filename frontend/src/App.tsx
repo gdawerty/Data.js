@@ -27,7 +27,8 @@ const App: React.FC = () => {
         <main className="flex-grow-1 p-3" style={{ backgroundColor: isDarkMode ? "#1d222b" : "#eef1fb" }}>
           <Router>
             <Routes>
-              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/" element={<Dashboard isDarkMode={isDarkMode} />} />
+              <Route path="/dashboard" element={<Dashboard isDarkMode={isDarkMode} />} />
               <Route path="/chat" element={<Chat />} />
               <Route path="/insights" element={<Insights />} />
               <Route path="/history" element={<History />} />
