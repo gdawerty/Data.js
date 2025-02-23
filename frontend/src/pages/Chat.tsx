@@ -50,6 +50,10 @@ const Chat: React.FC<ChatProps> = ({ isDarkMode }) => {
     }
   }, [messages]);
 
+  function timeout(delay: number) {
+    return new Promise((res) => setTimeout(res, delay));
+  }
+
   // Handle sending a message
   const handleSendMessage = async (message?: string) => {
     const userMessage = message || inputValue;
@@ -57,13 +61,14 @@ const Chat: React.FC<ChatProps> = ({ isDarkMode }) => {
 
     // Add the user's message to the chat history
     setMessages((prev) => [...prev, { text: userMessage, sender: "user" }]);
+    const localMsg = [...messages, { text: userMessage, sender: "user" }];
     setInputValue(""); // Clear the input field
     setIsLoading(true); // Show loading state
     setIsChatStarted(true); // Expand the chat UI
-
+    await timeout(100);
     try {
       // Convert the allMessages array to a string in the format "user: message\nbot: message\nuser: message"
-      const allMessages = messages.map((message) => `${message.sender}: ${message.text}`).join("\n");
+      const allMessages = localMsg.map((message) => `${message.sender}: ${message.text}`).join("\n");
 
       const response = await fetch("http://localhost:8000/api/chatbot/", {
         method: "POST",
