@@ -1,6 +1,7 @@
 import React from "react";
 import { Nav, Button } from "react-bootstrap";
-import { Dashboard, Chat, History, BarChart } from "@mui/icons-material";
+// import { Dashboard, Chat, History, BarChart } from "@mui/icons-material";
+import { Dashboard, Chat, History } from "@mui/icons-material";
 interface SidebarProps {
   isDarkMode: boolean;
 }
@@ -25,11 +26,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isDarkMode }) => {
           <History />
         </Button>
       </Nav.Link>
-      <Nav.Link href="/planning">
+      {/* <Nav.Link href="/planning">
         <Button variant={isDarkMode ? "outline-light" : "outline-dark"}>
           <BarChart />
         </Button>
-      </Nav.Link>
+      </Nav.Link> */}
     </Nav>
   );
 };
