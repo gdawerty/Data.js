@@ -8,5 +8,5 @@ class TransactionAdmin(admin.ModelAdmin):
 admin.site.register(Transaction, TransactionAdmin)
 
 class ContextAdmin(admin.ModelAdmin):
-   list_display = ('income_amount', 'income_frequency', 'income_additional_context', 'assets_type', 'assets_amount', 'assets_additional_context', 'location')
+   display = 'context'
 admin.site.register(Context, ContextAdmin)
