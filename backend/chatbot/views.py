@@ -24,10 +24,8 @@ async def chatbot(request):
             data = json.loads(request.body)
             prompt = data.get("prompt")
             
-            context = await get_context_str()
-            context = context if context else "No financial context available."
             transactions = await get_recent_transactions()
-            
+            context = await get_context_str()
             conversation_history = data.get("history", [])
             conversation_history.append({"role": "user", "content": prompt})
 
@@ -37,18 +35,18 @@ async def chatbot(request):
                 "Reference specific financial principles and rules of thumb (e.g., 10-5-3 rule, 50-30-20 rule). "
                 "Incorporate the user's financial history to create personalized insights and advice.\n\n"
                 
-                "User's financial context:\n"
+                "User's financial story so far:\n"
                 f"{context}\n\n"
                 
                 "Last 100 transactions:\n"
                 f"{transactions}\n\n"
                 
                 "Ask for clarification when needed, especially regarding salary, living conditions, and other financial details, if there is little known about this person. "
-                "Keep the conversation natural and engaging—messages should be short (max one paragraph) and cover only 1-2 topics at a time. Be friendly and supportive."
+                "Keep the conversation natural and engaging—messages should be short (max one paragraph) and cover only 1-2 topics at a time. Be friendly and supportive. "
                 "Ensure the user is not overwhelmed while still gathering necessary context. "
                 "If the user shares anything new or significant, acknowledge and integrate it into the conversation."
             )
-            
+
             anthropic_client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
             claude_model = "claude-3-5-sonnet-20241022"
             response = anthropic_client.messages.create(
@@ -67,6 +65,7 @@ async def chatbot(request):
         except Exception as e:
             print(f"Error: {e}")
             return JsonResponse({"error": str(e)}, status=500)
+
     return JsonResponse({"error": "Invalid HTTP method."}, status=405)
 
 async def pattern_recognition(request):
