@@ -5,9 +5,6 @@ import BarChart from "../components/panes/BarChart";
 import PieChart from "../components/panes/PieChart";
 import InsightPane from "../components/panes/InsightPane";
 import RecentTransactions from "../components/panes/RecentTransactions";
-import Insight from "../types/Insight";
-import { TrendingUp } from "@mui/icons-material";
-import { VictoryChart, VictoryBar, VictoryAxis, VictoryTheme } from "victory";
 import Transaction from "../types/Transaction";
 interface DashboardProps {
   isDarkMode: boolean;
@@ -63,7 +60,6 @@ const Dashboard: React.FC<DashboardProps> = ({ isDarkMode }) => {
           throw new Error("Failed to fetch spending insight");
         }
         const data = await message.json();
-        setSpendingInsight(data.response); // Assuming the response has a 'message' field
       } catch (error) {
         console.error("Error fetching spending insight:", error);
       }
