@@ -23,7 +23,6 @@ async def chatbot(request):
 
             data = json.loads(request.body)
             prompt = data.get("prompt")
-            print("prompt", prompt)
             
             context = await get_context_str()
             context = context if context else "No financial context available."
@@ -63,9 +62,6 @@ async def chatbot(request):
                 return JsonResponse({"error": "Unexpected response type."}, status=500)
 
             bot_response = response.content[0].text
-            new_info = check_for_new_info(bot_response, context)
-            if new_info:
-                context = await post_context(new_info)
             return JsonResponse({"response": bot_response}, status=200)
         
         except Exception as e:
@@ -106,24 +102,24 @@ async def pattern_recognition(request):
             return JsonResponse({"error": f"Failed to analyze patterns: {str(e)}"}, status=400)
     return JsonResponse({"error": "Invalid HTTP method."}, status=405)
 
-def check_for_new_info(bot_response, context):
-    bot_doc = nlp(bot_response)
-    context_doc = nlp(context)
+# def check_for_new_info(bot_response, context):
+#     bot_doc = nlp(bot_response)
+#     context_doc = nlp(context)
 
-    new_info = []
-    financial_info = []
+#     new_info = []
+#     financial_info = []
 
-    for ent in bot_doc.ents:
-        if ent.label_ in ["MONEY", "PERCENT", "DATE", "CARDINAL"]:
-            financial_info.append(ent.text)
+#     for ent in bot_doc.ents:
+#         if ent.label_ in ["MONEY", "PERCENT", "DATE", "CARDINAL"]:
+#             financial_info.append(ent.text)
 
-    for token in bot_doc:
-        if token.text not in context_doc.text:
-            new_info.append(token.text)
+#     for token in bot_doc:
+#         if token.text not in context_doc.text:
+#             new_info.append(token.text)
 
-    extracted_info = financial_info if financial_info else new_info
+#     extracted_info = financial_info if financial_info else new_info
 
-    return " ".join(set(extracted_info)) if extracted_info else None
+#     return " ".join(set(extracted_info)) if extracted_info else None
 
 async def transaction_insight(request):
     if request.method == "POST":
