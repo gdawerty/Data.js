@@ -18,14 +18,7 @@ const Dashboard: React.FC<DashboardProps> = ({ isDarkMode }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [expenseCategories, setExpenseCategories] = useState<string[]>([]);
   const [incomeCategories, setIncomeCategories] = useState<string[]>([]);
-  const [spendingInsights, setSpendingInsight] = useState<string>("");
   // const [displayedInsight, setDisplayedInsight] = useState<string>("");
-
-
-  const data = [
-    { x: "Salary Increase", y: 2 },
-    { x: "Inflation Rate", y: 3.2 },
-  ];
 
   // Fetch transactions from the API
   useEffect(() => {
@@ -55,113 +48,17 @@ const Dashboard: React.FC<DashboardProps> = ({ isDarkMode }) => {
         console.error("Error fetching transactions:", error);
       }
     };
-
-    const fetchSpendingInsight = async () => {
-      try {
-        const message = await fetch("http://localhost:8000/api/pattern_recognition",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        if (!message.ok) {
-          throw new Error("Failed to fetch spending insight");
-        }
-        const data = await message.json();
-        setSpendingInsight(data.response); // Assuming the response has a 'message' field
-      } catch (error) {
-        console.error("Error fetching spending insight:", error);
-      }
-    };
-
-    fetchSpendingInsight();
     fetchTransactions();
   }, []);
 
-  // Word-by-word display effect
-  useEffect(() => {
-    if (spendingInsights) {
-      const words = spendingInsights.split(" ");
-      let index = 0;
-
-      const interval = setInterval(() => {
-        if (index < words.length) {
-          // setDisplayedInsight((prev) => prev + (prev ? " " : "") + words[index]);
-          index++;
-        } else {
-          clearInterval(interval);
-        }
-      }, 500); // Adjust the speed of word display here
-
-      return () => clearInterval(interval); // Cleanup on unmount
-    }
-  }, [spendingInsights]);
-
   const sortedTransactions = transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   const recentTransactions = sortedTransactions.slice(0, 4);
-
-  const insight: Insight = {
-    chart: (
-      <VictoryChart
-        theme={VictoryTheme.material}
-        domainPadding={50} // Add padding between bars
-        padding={{ top: 40, bottom: 50, left: 60, right: 20 }}
-        style={{
-          parent: {
-            backgroundColor: isDarkMode ? "#333" : "#fff",
-          },
-        }}
-      >
-        <VictoryAxis
-          style={{
-            tickLabels: { fill: isDarkMode ? "white" : "black" }, // Dynamic tick label color
-          }}
-        />
-        <VictoryAxis
-          dependentAxis
-          tickFormat={(y) => `${y}%`} // Format y-axis ticks as percentages
-          style={{
-            tickLabels: { fill: isDarkMode ? "white" : "black" }, // Dynamic tick label color
-            axisLabel: { padding: 40, fill: isDarkMode ? "white" : "black" },
-          }}
-          label={"Percentage"}
-        />
-        <VictoryBar
-          data={data}
-          style={{
-            data: {
-              fill: ({ datum }) => (datum.x === "Salary Increase" ? "#82ca9d" : "#8884d8"), // Custom bar colors
-            },
-          }}
-        />
-      </VictoryChart>
-    ),
-    icon: <TrendingUp sx={{ fontSize: 50 }} style={{ paddingBottom: "8px" }} />,
-    title: "Spending Analysis",
-    description: (
-      <div style={{ 
-        maxHeight: "250px", 
-        overflowY: "auto", 
-        padding: "10px", 
-        border: "1px solid #ccc", 
-        borderRadius: "5px", 
-        backgroundColor: isDarkMode ? "#444" : "#fff", 
-        whiteSpace: "pre-wrap"
-      }}>
-        <p>
-        {spendingInsights || "Loading spending insight..."} {}
-        </p>
-      </div>
-    ),
-  };
   return (
     <Container className={isDarkMode ? "text-white" : "text-dark"} fluid>
       <h1 className="my-4">Dashboard</h1>
       <Row>
         <Col>
-          <InsightPane isDarkMode={isDarkMode} insight={insight} />
+          <InsightPane isDarkMode={isDarkMode} />
         </Col>
         <Col>
           <PieChart
