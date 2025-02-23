@@ -1,24 +1,96 @@
-// import React from "react";
+import React from "react";
 
 const About = () => {
   return (
     <div>
-      <h1>About</h1>
+      <h1 className="text-2xl font-bold mb-6 mt-4">About</h1>
       <hr />
+      <div style={{ marginTop: '50px' }}></div>
+
+      
+      {/* Add an image */}
+      <div
+        className="flex gap-4"
+        style={{
+          display: 'flex',
+          justifyContent: 'space-evenly',
+          width: '100%',
+          textAlign: 'center',  // Ensures names are centered below images
+        }}
+      >
+        {/* Jerry */}
+        <div>
+          <img
+            src="/images/Jwang.JPG"
+            style={{
+              borderRadius: '50%',
+              width: '200px',
+              height: '200px',
+              objectFit: 'cover',
+            }}
+          />
+          <p>Jerry Wang</p>
+        </div>
+        
+        {/* David */}
+        <div>
+          <img
+            src="/images/DLi.JPG"
+            style={{
+              borderRadius: '50%',
+              width: '200px',
+              height: '200px',
+              objectFit: 'cover',
+            }}
+          />
+          <p>David Li</p>
+        </div>
+        
+        {/* Aaron */}
+        <div>
+          <img
+            src="/images/AaronLuu.JPG"
+            style={{
+              borderRadius: '50%',
+              width: '200px',
+              height: '200px',
+              objectFit: 'cover',
+            }}
+          />
+          <p>Aaron Luu</p>
+        </div>
+        
+        {/* Ahmed */}
+        <div>
+          <img
+            src="/images/AAlaminl.JPG"
+            style={{
+              borderRadius: '50%',
+              width: '200px',
+              height: '200px',
+              objectFit: 'cover',
+            }}
+          />
+          <p>Ahmed Alamin</p>
+        </div>
+      </div>
+      <div style={{ marginTop: '30px' }}>
+
       <p>
-        This is a AI powered accounting management system for personal use. It helps you to manage your expenses,
-        income, and savings, and provides AI powered insights to help you save more money and reach your financial
+        This is an AI-powered accounting management system for personal use. It helps you to manage your expenses,
+        income, and savings, and provides AI-powered insights to help you save more money and reach your financial
         goals.
       </p>
+      </div>
       <br />
       <p>
-        <strong>Authors:</strong>
+        {/* <strong>Authors:</strong>
         <ul>
           <li>Jerry Wang</li>
           <li>David Li</li>
           <li>Aaron Luu</li>
           <li>Ahmed Alamin</li>
-        </ul>
+        </ul> */}
       </p>
       <br />
       <strong>License (MIT): </strong>
