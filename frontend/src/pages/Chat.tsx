@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, use } from "react";
 import { InputGroup, Form, Button } from "react-bootstrap";
+import { useLocation } from "react-router-dom";
 import "./Chat.css";
 import LoadingIndicator from "../components/LoadingIndicator";
 
@@ -17,6 +18,20 @@ const Chat: React.FC<ChatProps> = ({ isDarkMode }) => {
   // Refs
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const [initialMessage, setInitialMessage] = useState(queryParams.get("message"));
+  const hasSentInitialMessage = useRef(false);
+
+  useEffect(() => {
+    if (initialMessage && initialMessage.trim() && !hasSentInitialMessage.current) {
+      console.log("Initial message:", initialMessage);
+      handleSendMessage(initialMessage);
+      setInitialMessage("");
+      hasSentInitialMessage.current = true;
+    }
+  }, [initialMessage]);
 
   // Automatically scroll to the bottom when a new message is added
   useEffect(() => {
