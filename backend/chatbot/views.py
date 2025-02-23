@@ -14,10 +14,6 @@ from openai import OpenAI
 import spacy
 nlp = spacy.load("en_core_web_sm")
 
-from dotenv import load_dotenv
-import os
-load_dotenv()
-
 # Create your views here.
 async def chatbot(request):
     if request.method == 'POST':
@@ -240,29 +236,15 @@ def get_recent_transactions():
     return transaction_str if transaction_str else "No recent transactions available."
 
 async def get_market_news(request):
-    print("Received request:", request)
-
     api_token = os.getenv("MARKETAUX_API_KEY")
-    print("API Token retrieved from environment:", api_token)
-
-    if not api_token:
-        print("API Token not found in environment variables!")
-
-    url = f"https://api.marketaux.com/v1/news/all?api_token={api_token}&limit=5"
-    print("Constructed API Request URL:", url)
+    if api_token:
+        url = f"https://api.marketaux.com/v1/news/all?api_token={api_token}&limit=5"
 
     try:
-        print("Making request to the external API...")
         response = requests.get(url)
-        print(f"API Response Status Code: {response.status_code}")
-        
         response.raise_for_status()
-        print("API request was successful, parsing response...")
-
         data = response.json()
-        print("Data received from external API:", data)
         return JsonResponse(data, safe=False)
     
     except requests.exceptions.RequestException as e:
-        print("Error during API request:", str(e))
         return JsonResponse({"error": str(e)}, status=500)
