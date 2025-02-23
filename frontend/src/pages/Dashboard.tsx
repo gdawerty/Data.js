@@ -59,7 +59,6 @@ const Dashboard: React.FC<DashboardProps> = ({ isDarkMode }) => {
         if (!message.ok) {
           throw new Error("Failed to fetch spending insight");
         }
-        const data = await message.json();
       } catch (error) {
         console.error("Error fetching spending insight:", error);
       }

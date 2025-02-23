@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Pane from "../Pane";
-import { Card } from "react-bootstrap";
 import { TrendingUp } from "@mui/icons-material";
 interface InsightPaneProps {
   isDarkMode: boolean;
