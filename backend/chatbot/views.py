@@ -18,17 +18,33 @@ async def chatbot(request):
             prompt = data.get("prompt")
 
             # FIXME: REPLACE WITH REAL DATA
-            formatted_prompt = ("Financial Records\n" + "Date | Category - Amount: $X.XX, Notes: Y\n" + "-----------------------------\n" +
-                                "2023-09-01 | Rent - Amount: $1200.00, Notes: Monthly apartment rent\n" +
-                                "2023-09-05 | Groceries - Amount: $350.00, Notes: Weekly grocery shopping\n" +
-                                "2023-09-10 | Utilities - Amount: $150.00, Notes: Electricity and water bills\n" +
-                                "2023-09-08 | Transportation - Amount: $75.00, Notes: Monthly bus pass\n" +
-                                "-----------------------------\n" +
-                                "Saving Goal: $500.00\n" +
-                                "Current Balance: $1000.00\n" +
-                                "-----------------------------\n" +
-                                str(prompt))
-            print("formatted prompt", formatted_prompt)
+            system_prompt = (
+                "You are a personal financial assistant. Generate separate response summaries addressing optimizations for Daily Purchases, Long-term Subscriptions, and Investments/Assets "
+                "based on the income source/type, expenses source/type, and assets value/type. Each summary should be concise and relevant to their typical financial stake for an individual. "
+                "- Single Expenses (string)\n"
+                "- Recurring Expenses (string)\n"
+                "- Assets (string)\n"
+            )
+
+            # Sample prompt input:
+            # resident_text = "\n".join([
+            #     f"- {p['name']} ({p['street']}, {p['city']}, {p['state']}) - "
+            #     f"Disability: {p.get('disability', 'None')}, Info: {p.get('additional_info', 'N/A')}"
+            #     for p in sorted(nearby_individuals, key=lambda x: x["distance_miles"])
+            # ])
+            context_text = "\n".join([
+                f"- "
+            ])
+            
+
+            formatted_prompt = (
+                "Generate advice about spending in the short-term and long-term, always with the mindset of making smart financial choises."
+                "The following information is some financial context about the user: \n" + 
+                str(context_text) +
+                ".\nAnd this is the transaction information that we have to support, so please be specific:\n" + 
+                str()
+            )
+            
             # Create an Anthropics client instance using your API key from the environment
             anthropic_client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
             claude_model = "claude-3-5-sonnet-20241022"
@@ -36,6 +52,7 @@ async def chatbot(request):
             # Make the API call (this is an example; adjust as needed)
             response = anthropic_client.messages.create(
                 model=claude_model,
+                system=system_prompt,
                 max_tokens=500,
                 messages=[{"role": "user", "content": formatted_prompt}]
             )
