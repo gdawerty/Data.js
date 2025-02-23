@@ -17,7 +17,7 @@ const CustomNavbar: React.FC<NavbarProps> = ({ toggleTheme, isDarkMode }) => {
       fixed="top"
     >
       <Navbar.Brand style={{ paddingLeft: "20px" }} href="/">
-        AI.ccountant
+        FinSights
       </Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
