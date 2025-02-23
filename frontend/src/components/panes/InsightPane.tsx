@@ -11,7 +11,7 @@ const InsightPane: React.FC<InsightPaneProps> = ({ isDarkMode }) => {
   useEffect(() => {
     const fetchSpendingInsight = async () => {
       try {
-        const message = await fetch("http://localhost:8000/api/pattern_recognition", {
+        const message = await fetch("http://3.145.10.5:8000/api/pattern_recognition", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

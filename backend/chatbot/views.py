@@ -1,6 +1,4 @@
 from asgiref.sync import sync_to_async
-from django.shortcuts import render
-from dotenv import load_dotenv
 import os
 import json
 from django.http import JsonResponse
@@ -238,19 +236,37 @@ def get_recent_transactions():
     return transaction_str if transaction_str else "No recent transactions available."
 
 async def get_market_news(request):
-    # print("get_market_news", request)
-    # return JsonResponse({"response": "response"}, status=200)
-    api_token = os.getenv("MARKETAUX_API_KEY")
+    # Print the incoming request for debugging
+    print("Received request:", request)
 
+    # Retrieve API key from environment variable
+    api_token = os.getenv("MARKETAUX_API_KEY")
+    print("API Token retrieved from environment:", api_token)
+
+    if not api_token:
+        print("API Token not found in environment variables!")
+    
     # Construct the query string
     url = f"https://api.marketaux.com/v1/news/all?api_token={api_token}&limit=5"
-
+    print("Constructed API Request URL:", url)
 
     try:
+        # Send the request to the external API
+        print("Making request to the external API...")
         response = requests.get(url)
-        response.raise_for_status()
-        data = response.json()
+        print(f"API Response Status Code: {response.status_code}")
+        
+        response.raise_for_status()  # Raises an error if response code is 4xx or 5xx
+        print("API request was successful, parsing response...")
 
+        # Parse the JSON response
+        data = response.json()
+        print("Data received from external API:", data)
+
+        # Return the data as JSON response
         return JsonResponse(data, safe=False)
+    
     except requests.exceptions.RequestException as e:
+        # Log the error and return a 500 status code with the error message
+        print("Error during API request:", str(e))
         return JsonResponse({"error": str(e)}, status=500)

@@ -11,8 +11,11 @@ const NewsFeed: React.FC = () => {
                 // Fetch news from Django backend
                 const response = await fetch("http://3.145.10.5:8000/api/get_market_news", {
                     method: "GET",
-                    mode: "cors",  // Ensure that CORS is handled correctly
-                });
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    mode: "cors"
+                  });
                 
                 if (!response.ok) {
                     throw new Error('Failed to fetch news');
