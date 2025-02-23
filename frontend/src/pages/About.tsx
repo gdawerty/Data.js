@@ -1,3 +1,8 @@
+import alamin from "../assets/AAlamin.jpg";
+import aaron from "../assets/AaronLuu.jpeg";
+import li from "../assets/DLi.jpeg";
+import wang from "../assets/Jwang.jpeg";
+
 const About = () => {
   return (
     <div>
@@ -19,7 +24,7 @@ const About = () => {
         {/* Jerry */}
         <div>
           <img
-            src="/images/Jwang.JPG"
+            src={wang}
             style={{
               borderRadius: '50%',
               width: '200px',
@@ -33,7 +38,7 @@ const About = () => {
         {/* David */}
         <div>
           <img
-            src="/images/DLi.JPG"
+            src={li}
             style={{
               borderRadius: '50%',
               width: '200px',
@@ -47,7 +52,7 @@ const About = () => {
         {/* Aaron */}
         <div>
           <img
-            src="/images/AaronLuu.JPG"
+            src={aaron}
             style={{
               borderRadius: '50%',
               width: '200px',
@@ -61,7 +66,7 @@ const About = () => {
         {/* Ahmed */}
         <div>
           <img
-            src="/images/AAlaminl.JPG"
+            src={alamin}
             style={{
               borderRadius: '50%',
               width: '200px',
