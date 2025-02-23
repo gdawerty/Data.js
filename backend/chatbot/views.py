@@ -76,27 +76,24 @@ async def chatbot(request):
     return JsonResponse({"error": "Invalid HTTP method."}, status=405)
 
 async def pattern_recognition(request):
-    print(request)
     if request.method == "POST":
         try:
             transactions = await get_transactions_str()
-            
             message = (
                 "Identify patterns in the user's spending. Qualities to look out for are over-spending, under-spending, "
                 "unusual allocation of funds, and anomolies in terms of amounts/occurrances of categories. \n"
                 "Based on the transactions, find financial weakpoints and generate recommendations that would leverage the user's spending habits.\n"
-                "And Address \"the user\" as \"you\" to create a more conversational voice, with line breaks between recommendations to present the info clearly.\n\n"
+                "And Address \"the user\" as \"you\" to create a more conversational voice, with line breaks between recommendations and NO SPECIAL CHARACTERS to present the info clearly.\n\n"
                 "Points of Interests Include:\n"
                 "Buying goods in bulk or not, Perishability, Time of Season, Credit Card Rewards, "
                 "Items of certain discounts/accessibility, inflation, or differentiating vendor prices.\n"
-                "Focus more on the recommendations! Always pair advice with actual data from transactions, WITH NUMBERS.\n"
+                "Focus more on the recommendations and providing ACCURATE mathematical comparisons! Always pair advice with actual data from transactions, WITH NUMBERS.\n"
                 "The following are the user's transaction data: \n"
                 + transactions
             )
 
             openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-            openai_model = "gpt-4o-mini"
-
+            openai_model = "gpt-3.5-turbo"
             response = openai_client.chat.completions.create(
                 model=openai_model,
                 max_tokens=500,
