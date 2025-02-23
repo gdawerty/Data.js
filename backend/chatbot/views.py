@@ -236,15 +236,19 @@ def get_recent_transactions():
     return transaction_str if transaction_str else "No recent transactions available."
 
 async def get_market_news(request):
+    # print("get_market_news", request)
+    # return JsonResponse({"response": "response"}, status=200)
     api_token = os.getenv("MARKETAUX_API_KEY")
-    if api_token:
-        url = f"https://api.marketaux.com/v1/news/all?api_token={api_token}&limit=5"
+
+    # Construct the query string
+    url = f"https://api.marketaux.com/v1/news/all?api_token={api_token}&limit=5"
+
 
     try:
         response = requests.get(url)
         response.raise_for_status()
         data = response.json()
+
         return JsonResponse(data, safe=False)
-    
     except requests.exceptions.RequestException as e:
         return JsonResponse({"error": str(e)}, status=500)
