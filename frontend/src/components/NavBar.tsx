@@ -17,12 +17,11 @@ const CustomNavbar: React.FC<NavbarProps> = ({ toggleTheme, isDarkMode }) => {
       fixed="top"
     >
       <Navbar.Brand style={{ paddingLeft: "20px" }} href="/">
-        My App
+        AI.ccountant
       </Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="me-auto">
-          <Nav.Link href="/">Home</Nav.Link>
           <Nav.Link href="/about">About</Nav.Link>
         </Nav>
         <Form style={{ paddingRight: "10px" }}>
@@ -31,10 +30,7 @@ const CustomNavbar: React.FC<NavbarProps> = ({ toggleTheme, isDarkMode }) => {
           </Button>
         </Form>
         <Dropdown style={{ marginRight: "10px" }}>
-          <Dropdown.Toggle 
-            variant={isDarkMode ? "outline-light" : "outline-dark"}
-            id="dropdown-basic"
-          >
+          <Dropdown.Toggle variant={isDarkMode ? "outline-light" : "outline-dark"} id="dropdown-basic">
             <AccountCircle />
           </Dropdown.Toggle>
           <Dropdown.Menu align="end">

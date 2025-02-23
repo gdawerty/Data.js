@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CustomNavbar from "./components/NavBar";
 import Sidebar from "./components/SideBar";
-// import Footer from "./components/Footer";
+import Footer from "./components/Footer";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+
+import Insight from "./types/Insight";
+import InsightsGenerator from "./hooks/InsightsGenerator";
 
 import Dashboard from "./pages/Dashboard";
 import Chat from "./pages/Chat";
@@ -11,11 +14,9 @@ import History from "./pages/History";
 import Insights from "./pages/Insights";
 import Planning from "./pages/Planning";
 import About from "./pages/About";
-import Footer from "./components/Footer";
 
 const App: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
-
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
     document.body.classList.toggle("dark-mode", !isDarkMode);
