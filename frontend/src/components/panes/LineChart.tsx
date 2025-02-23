@@ -9,9 +9,10 @@ interface LineChartProps {
   yLabel: string;
   isDarkMode: boolean;
   transactions: Transaction[];
+  is_expense: boolean;
 }
 
-const LineChart: React.FC<LineChartProps> = ({ title, xLabel, yLabel, isDarkMode, transactions }) => {
+const LineChart: React.FC<LineChartProps> = ({ title, xLabel, yLabel, isDarkMode, transactions, is_expense }) => {
   const width = 700;
   const height = 400;
   // const data = [
@@ -44,7 +45,7 @@ const LineChart: React.FC<LineChartProps> = ({ title, xLabel, yLabel, isDarkMode
 
     const monthlyExpenses = uniqueMonths.map((month) => {
       const totalExpense = transactions
-        .filter((t) => dateToMonth(t.date) === month && t.is_expense)
+        .filter((t) => dateToMonth(t.date) === month && t.is_expense === is_expense)
         .reduce((sum, t) => sum + parseFloat(t.amount), 0);
 
       return { x: month, y: totalExpense };
