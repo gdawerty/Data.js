@@ -39,11 +39,15 @@ ALLOWED_HOSTS = [os.getenv("HOST"), '127.0.0.1', 'localhost']
 # Allow requests only from the specified origin (e.g., your React frontend on localhost:3000)
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "http://127.0.0.1:5173",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1:5173",
     "http://localhost:5173",
 ]
+
+
 
 # Application definition
 
@@ -166,3 +170,4 @@ AWS_STORAGE_BUCKET_NAME = 'your_bucket_name'
 AWS_S3_REGION_NAME = 'your_bucket_region' 
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 AWS_S3_FILE_OVERWRITE = False
+

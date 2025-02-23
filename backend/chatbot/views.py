@@ -5,6 +5,8 @@ import os
 import json
 from django.http import JsonResponse
 from .models import Transaction, Context
+import requests
+from django.conf import settings
 
 # Assume you have an Anthropic client library installed
 from anthropic import Anthropic
@@ -237,3 +239,21 @@ def get_recent_transactions():
         transaction_type = "Expense" if transaction.is_expense else "Income"
         transaction_str += f"Date: {transaction.date}, Amount: {transaction.amount} ({transaction_type}), Category: {transaction.category}, Description: {transaction.description if transaction.description else 'No description'}\n"
     return transaction_str if transaction_str else "No recent transactions available."
+
+async def get_market_news(request):
+    # print("get_market_news", request)
+    # return JsonResponse({"response": "response"}, status=200)
+    api_token = os.getenv("MARKETAUX_API_KEY")
+
+    # Construct the query string
+    url = f"https://api.marketaux.com/v1/news/all?api_token={api_token}&limit=5"
+
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json()
+
+        return JsonResponse(data, safe=False)
+    except requests.exceptions.RequestException as e:
+        return JsonResponse({"error": str(e)}, status=500)
