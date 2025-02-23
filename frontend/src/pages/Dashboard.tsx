@@ -18,6 +18,9 @@ const Dashboard: React.FC<DashboardProps> = ({ isDarkMode }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [expenseCategories, setExpenseCategories] = useState<string[]>([]);
   const [incomeCategories, setIncomeCategories] = useState<string[]>([]);
+  const [spendingInsights, setSpendingInsight] = useState<string>("");
+  const [displayedInsight, setDisplayedInsight] = useState<string>("");
+
 
   const data = [
     { x: "Salary Increase", y: 2 },
@@ -53,8 +56,48 @@ const Dashboard: React.FC<DashboardProps> = ({ isDarkMode }) => {
       }
     };
 
+    const fetchSpendingInsight = async () => {
+      try {
+        const message = await fetch("http://localhost:8000/api/pattern_recognition",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (!message.ok) {
+          throw new Error("Failed to fetch spending insight");
+        }
+        const data = await message.json();
+        setSpendingInsight(data.response); // Assuming the response has a 'message' field
+      } catch (error) {
+        console.error("Error fetching spending insight:", error);
+      }
+    };
+
+    fetchSpendingInsight();
     fetchTransactions();
   }, []);
+
+  // Word-by-word display effect
+  useEffect(() => {
+    if (spendingInsights) {
+      const words = spendingInsights.split(" ");
+      let index = 0;
+
+      const interval = setInterval(() => {
+        if (index < words.length) {
+          setDisplayedInsight((prev) => prev + (prev ? " " : "") + words[index]);
+          index++;
+        } else {
+          clearInterval(interval);
+        }
+      }, 500); // Adjust the speed of word display here
+
+      return () => clearInterval(interval); // Cleanup on unmount
+    }
+  }, [spendingInsights]);
 
   const sortedTransactions = transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   const recentTransactions = sortedTransactions.slice(0, 4);
@@ -96,13 +139,21 @@ const Dashboard: React.FC<DashboardProps> = ({ isDarkMode }) => {
       </VictoryChart>
     ),
     icon: <TrendingUp sx={{ fontSize: 50 }} style={{ paddingBottom: "8px" }} />,
-    title: "Salary Inflation",
+    title: "Spending Analysis",
     description: (
-      <p>
-        Your salary has only increased by <strong>2%</strong> over the past year, which is below the average inflation
-        rate of <strong>3.2%</strong>. You may want to consider negotiating a raise or looking for a new job to keep up
-        with rising costs.
-      </p>
+      <div style={{ 
+        maxHeight: "250px", 
+        overflowY: "auto", 
+        padding: "10px", 
+        border: "1px solid #ccc", 
+        borderRadius: "5px", 
+        backgroundColor: isDarkMode ? "#444" : "#fff", 
+        whiteSpace: "pre-wrap"
+      }}>
+        <p>
+        {spendingInsights || "Loading spending insight..."} {}
+        </p>
+      </div>
     ),
   };
   return (
