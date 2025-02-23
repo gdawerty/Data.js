@@ -9,7 +9,7 @@ const NewsFeed: React.FC = () => {
         const fetchNews = async () => {
             try {
                 // Fetch news from Django backend
-                const response = await fetch("http://127.0.0.1:8000/api/get_market_news", {
+                const response = await fetch("http://3.145.10.5:8000/api/get_market_news", {
                     method: "GET",
                     mode: "cors",  // Ensure that CORS is handled correctly
                 });

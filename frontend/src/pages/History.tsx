@@ -47,7 +47,7 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
     const fetchAIInsight = async () => {
       try {
         setAIInsightLoading(true);
-        const response = await fetch(`http://localhost:8000/api/transaction_insight`, {
+        const response = await fetch(`http://3.145.10.5:8000/api/transaction_insight`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -72,7 +72,7 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/get_transaction");
+        const response = await fetch("http://3.145.10.5:8000/api/get_transaction");
         if (!response.ok) {
           throw new Error("Failed to fetch transactions");
         }
@@ -123,7 +123,7 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
     };
     console.log("Adding transaction:", newTransactionData);
     try {
-      fetch("http://localhost:8000/api/post_transaction", {
+      fetch("http://3.145.10.5:8000/api/post_transaction", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

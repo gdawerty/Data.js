@@ -31,7 +31,7 @@ const Dashboard: React.FC<DashboardProps> = ({ isDarkMode }) => {
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/get_transaction");
+        const response = await fetch("http://3.145.10.5:8000/api/get_transaction");
         if (!response.ok) {
           throw new Error("Failed to fetch transactions");
         }
@@ -58,7 +58,7 @@ const Dashboard: React.FC<DashboardProps> = ({ isDarkMode }) => {
 
     const fetchSpendingInsight = async () => {
       try {
-        const message = await fetch("http://localhost:8000/api/pattern_recognition",
+        const message = await fetch("http://3.145.10.5:8000/api/pattern_recognition",
           {
             method: "POST",
             headers: {

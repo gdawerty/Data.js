@@ -10,5 +10,9 @@ boto3>=1.20.0
 pymysql>=1.0.2
 mysqlclient>=2.1.0
 spacy[transformers]>=3.1.0
+spacy==3.5.0
+en-core-web-lg==3.5.0
+en-core-web-sm==3.5.0
 fastapi>=0.75.0
 pydantic>=1.8.0
+requests=2.32.3

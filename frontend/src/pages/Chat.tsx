@@ -70,7 +70,7 @@ const Chat: React.FC<ChatProps> = ({ isDarkMode }) => {
       // Convert the allMessages array to a string in the format "user: message\nbot: message\nuser: message"
       const allMessages = localMsg.map((message) => `${message.sender}: ${message.text}`).join("\n");
 
-      const response = await fetch("http://localhost:8000/api/chatbot/", {
+      const response = await fetch("http://3.145.10.5:8000/api/chatbot/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
