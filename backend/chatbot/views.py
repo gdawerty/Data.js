@@ -25,8 +25,13 @@ async def chatbot(request):
             prompt = data.get("prompt")
             print("prompt", prompt)
             
-            context = await get_context_str() or "No financial context available."
-            transactions = await get_transactions_str() or "No transaction history available."
+            context = await get_context_str()
+            context = context if context else "No financial context available."
+            transactions = await get_recent_transactions()
+            
+            conversation_history = data.get("history", [])
+            conversation_history.append({"role": "user", "content": prompt})
+            
             conversation_history = data.get("history", [])
             conversation_history.append({"role": "user", "content": prompt})
 
@@ -62,6 +67,9 @@ async def chatbot(request):
                 return JsonResponse({"error": "Unexpected response type."}, status=500)
 
             bot_response = response.content[0].text
+            new_info = check_for_new_info(bot_response, context)
+            if new_info:
+                context = await post_context(new_info)
             new_info = check_for_new_info(bot_response, context)
             if new_info:
                 context = await post_context(new_info)
@@ -217,5 +225,22 @@ def get_context(request):
     return JsonResponse({"error": "Invalid HTTP method."}, status=405)
 
 @sync_to_async
-def get_context_str()->str:
-    return Context.objects.all()[0].context
+def get_context_str() -> str:
+    try:
+        context = Context.objects.first()
+        if context:
+            return context.context
+        else:
+            return "No financial context available."
+    except Exception as e:
+        print(f"Error fetching context: {e}")
+        return "Error fetching context data."
+    
+@sync_to_async
+def get_recent_transactions():
+    transactions = Transaction.objects.all().order_by('-date')[:10]
+    transaction_str = ""
+    for transaction in transactions:
+        transaction_type = "Expense" if transaction.is_expense else "Income"
+        transaction_str += f"Date: {transaction.date}, Amount: {transaction.amount} ({transaction_type}), Category: {transaction.category}, Description: {transaction.description if transaction.description else 'No description'}\n"
+    return transaction_str if transaction_str else "No recent transactions available."
