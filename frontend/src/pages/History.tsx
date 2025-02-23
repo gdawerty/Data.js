@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Accordion, Form, Button, Card, ListGroup, Badge, Modal } from "react-bootstrap";
 import "./History.css";
 
 interface Transaction {
   id: number;
-  dateTime: string;
-  amount: number;
-  isExpense: boolean;
-  type: string;
+  date: string;
+  amount: string;
+  is_expense: boolean;
+  category: string;
   description: string;
+  user_id: number;
 }
 
 interface HistoryProps {
@@ -30,79 +31,37 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
 
   const [showModal, setShowModal] = useState(false); // State for modal visibility
   const [newTransaction, setNewTransaction] = useState<Partial<Transaction>>({
-    dateTime: new Date().toISOString(),
-    amount: 0,
-    isExpense: true,
-    type: "food",
+    date: new Date().toISOString(),
+    amount: "0",
+    is_expense: true,
+    category: "food",
     description: "",
   });
 
-  const transactions: Transaction[] = [
-    {
-      id: 1,
-      dateTime: "2024-08-01T12:00:00Z",
-      amount: 100,
-      isExpense: false,
-      type: "gift",
-      description: "Payment from John Doe",
-    },
-    {
-      id: 2,
-      dateTime: "2024-08-01T14:00:00Z",
-      amount: 50,
-      isExpense: true,
-      type: "food",
-      description: "Lunch at McDonald's",
-    },
-    {
-      id: 3,
-      dateTime: "2024-08-01T18:00:00Z",
-      amount: 200,
-      isExpense: true,
-      type: "transportation",
-      description: "Uber ride",
-    },
-    {
-      id: 4,
-      dateTime: "2024-09-02T09:00:00Z",
-      amount: 5000,
-      isExpense: false,
-      type: "salary",
-      description: "Monthly salary",
-    },
-    {
-      id: 5,
-      dateTime: "2024-12-02T12:00:00Z",
-      amount: 100,
-      isExpense: true,
-      type: "food",
-      description: "Dinner at KFC",
-    },
-    {
-      id: 6,
-      dateTime: "2024-12-03T10:00:00Z",
-      amount: 300,
-      isExpense: true,
-      type: "shopping",
-      description: "Clothes shopping",
-    },
-    {
-      id: 7,
-      dateTime: "2024-12-03T15:00:00Z",
-      amount: 150,
-      isExpense: false,
-      type: "gift",
-      description: "Gift from Jane Doe",
-    },
-    {
-      id: 8,
-      dateTime: "2025-01-01T09:00:00Z",
-      amount: 75,
-      isExpense: true,
-      type: "transportation",
-      description: "Bus fare",
-    },
-  ];
+  const [transactions, setTransactions] = useState<Transaction[]>([]); // State for transactions
+  const [categories, setCategories] = useState<string[]>([]); // State for unique categories
+
+  // Fetch transactions from the API
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/api/get_transaction");
+        if (!response.ok) {
+          throw new Error("Failed to fetch transactions");
+        }
+        const data = await response.json();
+        setTransactions(data.expenses);
+
+        // Extract unique categories for the filter dropdown
+        const uniqueCategories = Array.from(new Set(data.expenses.map((t: Transaction) => t.category)));
+        setCategories(uniqueCategories);
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+      }
+    };
+
+    fetchTransactions();
+  }, []);
 
   const handleShowModal = () => setShowModal(true);
 
@@ -113,7 +72,7 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
     const { name, value } = e.target;
     setNewTransaction((prev) => ({
       ...prev,
-      [name]: name === "amount" ? parseFloat(value) : value,
+      [name]: name === "amount" ? value : value,
     }));
   };
 
@@ -126,7 +85,7 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
   };
 
   // Get the earliest transaction date
-  const earliestDate = new Date(Math.min(...transactions.map((t) => new Date(t.dateTime).getTime())));
+  const earliestDate = new Date(Math.min(...transactions.map((t) => new Date(t.date).getTime())));
 
   // Generate all months between the earliest date and now
   const getAllMonths = () => {
@@ -147,18 +106,18 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
   // Filter transactions based on filters
   const filteredTransactions = transactions
     .filter((transaction) => {
-      const matchesExpense = filters.isExpense === null || transaction.isExpense === filters.isExpense;
-      const matchesType = filters.type === null || transaction.type === filters.type;
+      const matchesExpense = filters.isExpense === null || transaction.is_expense === filters.isExpense;
+      const matchesType = filters.type === null || transaction.category === filters.type;
       const matchesDate =
-        (!filters.startDate || new Date(transaction.dateTime) >= new Date(filters.startDate)) &&
-        (!filters.endDate || new Date(transaction.dateTime) <= new Date(filters.endDate));
+        (!filters.startDate || new Date(transaction.date) >= new Date(filters.startDate)) &&
+        (!filters.endDate || new Date(transaction.date) <= new Date(filters.endDate));
       return matchesExpense && matchesType && matchesDate;
     })
-    .sort((a, b) => new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime()); // Sort transactions in descending order
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // Sort transactions in descending order
 
   // Group transactions by month, week, and day
   const groupedTransactions = filteredTransactions.reduce((acc, transaction) => {
-    const date = new Date(transaction.dateTime);
+    const date = new Date(transaction.date);
     const month = date.toLocaleString("default", { month: "long", year: "numeric" });
     const week = `Week ${Math.ceil(date.getDate() / 7)}`;
     const day = date.toLocaleDateString();
@@ -180,6 +139,7 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
         </Button>
       </div>
 
+      {/* Modal for adding a new transaction */}
       <Modal show={showModal} onHide={handleCloseModal} centered size="lg">
         <Modal.Header closeButton className={isDarkMode ? "bg-dark text-light" : ""}>
           <Modal.Title>Add New Transaction</Modal.Title>
@@ -211,47 +171,28 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Type</Form.Label>
+              <Form.Label>Category</Form.Label>
               <Form.Select
-                name="type"
-                value={newTransaction.type}
+                name="category"
+                value={newTransaction.category}
                 onChange={handleInputChange}
                 required
                 className={isDarkMode ? "bg-secondary text-light" : ""}
               >
-                <option value="food">Food</option>
-                <option value="transportation">Transportation</option>
-                <option value="salary">Salary</option>
-                <option value="shopping">Shopping</option>
-                <option value="gift">Gift</option>
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
               </Form.Select>
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Category</Form.Label>
-              <Form.Select
-                name="isExpense"
-                value={newTransaction.isExpense ? "expense" : "income"}
-                onChange={(e) =>
-                  setNewTransaction((prev) => ({
-                    ...prev,
-                    isExpense: e.target.value === "expense",
-                  }))
-                }
-                required
-                className={isDarkMode ? "bg-secondary text-light" : ""}
-              >
-                <option value="expense">Expense</option>
-                <option value="income">Income</option>
-              </Form.Select>
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>Date and Time</Form.Label>
+              <Form.Label>Date</Form.Label>
               <Form.Control
-                type="datetime-local"
-                name="dateTime"
-                value={newTransaction.dateTime}
+                type="date"
+                name="date"
+                value={newTransaction.date}
                 onChange={handleInputChange}
                 required
                 className={isDarkMode ? "bg-secondary text-light" : ""}
@@ -284,26 +225,25 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
           }}
         />
       )}
-
+      {/* Filters Section */}
       <Card className={`mb-4 ${isDarkMode ? "bg-dark text-light" : "bg-light text-dark"}`}>
         <Card.Body>
           <Form>
             <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
-              {/* Filters Section */}
               <div className="d-flex flex-wrap gap-3 align-items-center">
                 <Form.Group className="d-flex align-items-center">
-                  <Form.Label className="me-2 mb-0">Type:</Form.Label>
+                  <Form.Label className="me-2 mb-0">Category:</Form.Label>
                   <Form.Select
                     className={`form-control w-auto ${isDarkMode ? "bg-secondary text-light" : ""}`}
                     value={filters.type || ""}
                     onChange={(e) => setFilters({ ...filters, type: e.target.value || null })}
                   >
                     <option value="">All</option>
-                    <option value="gift">Gift</option>
-                    <option value="food">Food</option>
-                    <option value="transportation">Transportation</option>
-                    <option value="salary">Salary</option>
-                    <option value="shopping">Shopping</option>
+                    {categories.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
                   </Form.Select>
                 </Form.Group>
 
@@ -365,75 +305,35 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
         </Card.Body>
       </Card>
 
-      <Accordion flush defaultActiveKey={allMonths} alwaysOpen className={isDarkMode ? "bg-dark text-light" : ""}>
+      {/* Transactions Accordion */}
+      <Accordion flush alwaysOpen className={isDarkMode ? "bg-dark text-light" : ""}>
         {allMonths.map((month) => (
           <Accordion.Item
             key={month}
             eventKey={month}
             className={isDarkMode ? "bg-dark text-light border-secondary" : ""}
           >
-            <Accordion.Header
-              style={{
-                color: isDarkMode ? "#fff" : "#000",
-              }}
-            >
-              <span
-                style={{
-                  color: isDarkMode ? "#fff" : "#000",
-                }}
-              >
-                {month}
-              </span>
-            </Accordion.Header>
+            <Accordion.Header>{month}</Accordion.Header>
             <Accordion.Body className={isDarkMode ? "bg-dark text-light" : ""}>
               {groupedTransactions[month] ? (
                 Object.entries(groupedTransactions[month])
                   .sort(([weekA], [weekB]) => parseInt(weekB.split(" ")[1]) - parseInt(weekA.split(" ")[1])) // Sort weeks in descending order
                   .map(([week, days]) => (
-                    <Accordion
-                      key={week}
-                      defaultActiveKey={week}
-                      alwaysOpen
-                      className={isDarkMode ? "bg-dark text-light" : ""}
-                    >
-                      <Accordion.Item
-                        eventKey={week}
-                        className={isDarkMode ? "bg-dark text-light border-secondary" : ""}
-                      >
+                    <Accordion key={week} alwaysOpen>
+                      <Accordion.Item eventKey={week}>
                         <Accordion.Header>
-                          <span
-                            style={{
-                              color: isDarkMode ? "#fff" : "#000",
-                            }}
-                          >
-                            {week}
-                          </span>
-                        </Accordion.Header>
-                        <Accordion.Body className={isDarkMode ? "bg-dark text-light" : ""}>
+                          {/* TODO: Week and dates of week */}
+                          {week} 
+                          </Accordion.Header>
+                        <Accordion.Body>
                           {Object.entries(days)
                             .sort(([dayA], [dayB]) => new Date(dayB).getTime() - new Date(dayA).getTime()) // Sort days in descending order
                             .map(([day, transactions]) => (
-                              <Accordion
-                                key={day}
-                                defaultActiveKey={day}
-                                alwaysOpen
-                                className={isDarkMode ? "bg-dark text-light" : ""}
-                              >
-                                <Accordion.Item
-                                  eventKey={day}
-                                  className={isDarkMode ? "bg-dark text-light border-secondary" : ""}
-                                >
-                                  <Accordion.Header>
-                                    <span
-                                      style={{
-                                        color: isDarkMode ? "#fff" : "#000",
-                                      }}
-                                    >
-                                      {day}
-                                    </span>
-                                  </Accordion.Header>
-                                  <Accordion.Body className={isDarkMode ? "bg-dark text-light" : ""}>
-                                    <ListGroup variant={isDarkMode ? "flush" : ""}>
+                              <Accordion key={day} alwaysOpen>
+                                <Accordion.Item eventKey={day}>
+                                  <Accordion.Header>{day}</Accordion.Header>
+                                  <Accordion.Body>
+                                    <ListGroup>
                                       {transactions.map((transaction) => (
                                         <ListGroup.Item
                                           key={transaction.id}
@@ -444,10 +344,10 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
                                           <div>
                                             <strong>{transaction.description}</strong>
                                             <br />
-                                            <small>{transaction.type}</small>
+                                            <small>{transaction.category}</small>
                                           </div>
-                                          <Badge bg={transaction.isExpense ? "danger" : "success"}>
-                                            {transaction.isExpense ? "-" : "+"}${transaction.amount.toFixed(2)}
+                                          <Badge bg={transaction.is_expense ? "danger" : "success"}>
+                                            {transaction.is_expense ? "-" : "+"}${transaction.amount}
                                           </Badge>
                                         </ListGroup.Item>
                                       ))}
