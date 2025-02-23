@@ -170,7 +170,6 @@ const Dashboard: React.FC<DashboardProps> = ({ isDarkMode }) => {
             categories={incomeCategories as string[]}
             transactions={sortedTransactions}
           />
-          {/* <BarChart title="Investments" xLabel="Month" yLabel="Investments" isDarkMode={isDarkMode} /> */}
         </Col>
       </Row>
       <Row>
@@ -181,6 +180,7 @@ const Dashboard: React.FC<DashboardProps> = ({ isDarkMode }) => {
             yLabel="Income"
             isDarkMode={isDarkMode}
             transactions={sortedTransactions}
+            is_expense={false}
           />
         </Col>
         <Col>
@@ -194,6 +194,19 @@ const Dashboard: React.FC<DashboardProps> = ({ isDarkMode }) => {
             transactions={sortedTransactions}
           />
         </Col>
+      </Row>
+      <Row>
+        <Col>
+          <LineChart
+            title="Monthly Expenses"
+            xLabel="Month"
+            yLabel="Expenses"
+            isDarkMode={isDarkMode}
+            transactions={sortedTransactions}
+            is_expense={true}
+          />
+        </Col>
+        <Col><BarChart title="Investments" xLabel="Month" yLabel="Investments" isDarkMode={isDarkMode} /></Col>
       </Row>
     </Container>
   );

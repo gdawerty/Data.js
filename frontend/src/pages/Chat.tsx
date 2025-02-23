@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, use } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { InputGroup, Form, Button } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 import "./Chat.css";
@@ -214,7 +214,8 @@ const Chat: React.FC<ChatProps> = ({ isDarkMode }) => {
                 style={{
                   textAlign: message.sender === "user" ? "right" : "left",
                   marginBottom: "10px",
-                  width: "100%",
+                  width: "75%", // Set width to 75%
+                  alignSelf: message.sender === "user" ? "flex-end" : "flex-start", // Align to respective sides
                   whiteSpace: "pre-wrap",
                 }}
               >
@@ -236,7 +237,8 @@ const Chat: React.FC<ChatProps> = ({ isDarkMode }) => {
                 style={{
                   textAlign: "left",
                   marginBottom: "10px",
-                  width: "100%",
+                  width: "75%", // Set width to 75%
+                  alignSelf: "flex-start", // Align to the left
                   whiteSpace: "pre-wrap",
                 }}
               >
