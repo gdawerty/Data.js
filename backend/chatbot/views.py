@@ -71,3 +71,47 @@ async def chatbot(request):
     
     # Only allow POST requests
     return JsonResponse({"error": "Invalid HTTP method."}, status=405)
+
+from .models import Transaction, Context
+
+def post_transaction(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+
+            transaction = Transaction.objects.create(**data)
+            transaction.save()
+            return JsonResponse({"message": "Successfully added expense to database"})
+        except Exception as e:
+            return JsonResponse({"error": f"Failed to add expense to database: {str(e)}"}, status=400)
+    return JsonResponse({"error": "Invalid HTTP method."}, status=405)
+
+def post_context(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+
+            context = Context.objects.create(**data)
+            context.save()
+            return JsonResponse({"message": "Successfully added context to database"})
+        except Exception as e:
+            return JsonResponse({"error": f"Failed to add expense to database: {str(e)}"}, status=400)
+    return JsonResponse({"error": "Invalid HTTP method."}, status=405)
+
+def get_transaction(request):
+    if request.method == "GET":
+        try:
+            expenses = list(Transaction.objects.values())
+            return JsonResponse({"expenses": expenses}, status=200)
+        except Exception as e:
+            return JsonResponse({"error": f"Failed to add expense to database: {str(e)}"}, status=400)
+    return JsonResponse({"error": "Invalid HTTP method."}, status=405)
+
+def get_context(request):
+    if request.method == "GET":
+        try:
+            context = list(Context.objects.values())
+            return JsonResponse({"expenses": context}, status=200)
+        except Exception as e:
+            return JsonResponse({"error": f"Failed to add expense to database: {str(e)}"}, status=400)
+    return JsonResponse({"error": "Invalid HTTP method."}, status=405)
