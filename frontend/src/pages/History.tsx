@@ -2,15 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Accordion, Form, Button, Card, ListGroup, Badge, Modal, Spinner } from "react-bootstrap";
 import "./History.css";
 import { Lightbulb } from "@mui/icons-material";
-interface Transaction {
-  id: number;
-  date: string;
-  amount: string;
-  is_expense: boolean;
-  category: string;
-  description: string;
-  user_id: number;
-}
+import Transaction from "../types/Transaction";
 
 interface HistoryProps {
   isDarkMode: boolean;

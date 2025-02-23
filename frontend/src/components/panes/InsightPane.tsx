@@ -10,7 +10,7 @@ interface InsightPaneProps {
 
 const InsightPane: React.FC<InsightPaneProps> = ({ isDarkMode, insight }) => {
   return (
-    <Pane title="Insights" width={1325} isDarkMode={isDarkMode}>
+    <Pane title="Insights" width={1225} isDarkMode={isDarkMode}>
       <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
         {/* Bar Chart */}
         <Card
