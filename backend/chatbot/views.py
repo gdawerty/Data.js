@@ -3,13 +3,12 @@ from dotenv import load_dotenv
 import os
 import json
 from django.http import JsonResponse
+from .models import Transaction, Context
 
 # Assume you have an Anthropic client library installed
 from anthropic import Anthropic
 
 # Create your views here.
-
-
 async def chatbot(request):
     if request.method == 'POST':
         try:
@@ -72,7 +71,41 @@ async def chatbot(request):
     # Only allow POST requests
     return JsonResponse({"error": "Invalid HTTP method."}, status=405)
 
-from .models import Transaction, Context
+async def transaction_insight(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            prompt = data.get("prompt")
+            transaction_id = data.get("id")
+            
+            context = get_context()
+            transactions = get_transaction()
+            transaction = Transaction.objects.filter(id = transaction_id)
+
+            system_prompt = (
+                "The user has made this transaction.\n " + transaction + "\n"
+                "This is what we known about the user's financial situation\n" + context + "\n"
+                "This is what we known about the user's transaction history\n" + transactions + "\n"
+                "Given this information, provide customized insight judging this transaction. Such as if it was expensive, their are better alternatives out there, etc. Rate whether it was a fine, decent, or great transaction, and give additonal information as needed."
+                "Examples, that gives you a general idea of what I mean. `This is your 3rd time getting gas this week` or `gas prices in your area generally hover around ~ at this time. Consider ...` or `This is a really worth the money! Consider going here more often` ... etc"
+            )
+            anthropic_client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+            claude_model = "claude-3-5-sonnet-20241022"
+            response = anthropic_client.messages.create(
+                model=claude_model,
+                system=system_prompt,
+                max_tokens=500,
+                messages=[{"role": "user", "content": system_prompt}]
+            )
+            if response.type != "message":
+                return JsonResponse({"error": "Unexpected response type."}, status=500)
+            return JsonResponse({"response": response.content[0].text}, status=200)
+
+        except Exception as e:
+            return JsonResponse({"error": f"Failed to use chatbot to obtain initial context: {str(e)}"}, status=400)
+    return JsonResponse({"error": "Invalid HTTP method."}, status=405)
+
+
 
 def post_transaction(request):
     if request.method == "POST":
@@ -83,7 +116,7 @@ def post_transaction(request):
             transaction.save()
             return JsonResponse({"message": "Successfully added expense to database"})
         except Exception as e:
-            return JsonResponse({"error": f"Failed to add expense to database: {str(e)}"}, status=400)
+            return JsonResponse({"error": f"Failed to post transaction to database: {str(e)}"}, status=400)
     return JsonResponse({"error": "Invalid HTTP method."}, status=405)
 
 def post_context(request):
@@ -95,7 +128,7 @@ def post_context(request):
             context.save()
             return JsonResponse({"message": "Successfully added context to database"})
         except Exception as e:
-            return JsonResponse({"error": f"Failed to add expense to database: {str(e)}"}, status=400)
+            return JsonResponse({"error": f"Failed to post context to database: {str(e)}"}, status=400)
     return JsonResponse({"error": "Invalid HTTP method."}, status=405)
 
 def get_transaction(request):
@@ -104,7 +137,7 @@ def get_transaction(request):
             expenses = list(Transaction.objects.values())
             return JsonResponse({"expenses": expenses}, status=200)
         except Exception as e:
-            return JsonResponse({"error": f"Failed to add expense to database: {str(e)}"}, status=400)
+            return JsonResponse({"error": f"Failed to get transaction to database: {str(e)}"}, status=400)
     return JsonResponse({"error": "Invalid HTTP method."}, status=405)
 
 def get_context(request):
@@ -113,5 +146,5 @@ def get_context(request):
             context = list(Context.objects.values())
             return JsonResponse({"expenses": context}, status=200)
         except Exception as e:
-            return JsonResponse({"error": f"Failed to add expense to database: {str(e)}"}, status=400)
+            return JsonResponse({"error": f"Failed to get context to database: {str(e)}"}, status=400)
     return JsonResponse({"error": "Invalid HTTP method."}, status=405)
