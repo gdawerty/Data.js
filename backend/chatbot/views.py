@@ -31,10 +31,6 @@ async def chatbot(request):
             
             conversation_history = data.get("history", [])
             conversation_history.append({"role": "user", "content": prompt})
-            
-            conversation_history = data.get("history", [])
-            conversation_history.append({"role": "user", "content": prompt})
-
 
             system_prompt = (
                 "You are speaking directly to the user in the second person ('YOU'). "
@@ -67,9 +63,6 @@ async def chatbot(request):
                 return JsonResponse({"error": "Unexpected response type."}, status=500)
 
             bot_response = response.content[0].text
-            new_info = check_for_new_info(bot_response, context)
-            if new_info:
-                context = await post_context(new_info)
             new_info = check_for_new_info(bot_response, context)
             if new_info:
                 context = await post_context(new_info)
