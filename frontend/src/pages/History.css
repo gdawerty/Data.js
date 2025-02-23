@@ -8,3 +8,16 @@
     background-color: transparent;
     color: #000000;
 }
+
+.transaction-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  position: relative;
+}
+
+.transaction-actions Button {
+  position: absolute;
+  height: 50px;
+  right: 100px;
+}

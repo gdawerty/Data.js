@@ -1,3 +1,4 @@
+from asgiref.sync import sync_to_async
 from django.shortcuts import render
 from dotenv import load_dotenv
 import os
@@ -75,12 +76,12 @@ async def transaction_insight(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
-            prompt = data.get("prompt")
             transaction_id = data.get("id")
             
-            context = get_context()
-            transactions = get_transaction()
-            transaction = Transaction.objects.filter(id = transaction_id)
+            context = await get_context_str()
+            transaction = await get_transaction_by_id(transaction_id)
+            print("transaction", transaction)
+            transactions = await get_transactions_str()
 
             system_prompt = (
                 "The user has made this transaction.\n " + transaction + "\n"
@@ -104,8 +105,6 @@ async def transaction_insight(request):
         except Exception as e:
             return JsonResponse({"error": f"Failed to use chatbot to obtain initial context: {str(e)}"}, status=400)
     return JsonResponse({"error": "Invalid HTTP method."}, status=405)
-
-
 
 def post_transaction(request):
     if request.method == "POST":
@@ -140,6 +139,17 @@ def get_transaction(request):
             return JsonResponse({"error": f"Failed to get transaction to database: {str(e)}"}, status=400)
     return JsonResponse({"error": "Invalid HTTP method."}, status=405)
 
+@sync_to_async
+def get_transactions_str():
+    transactions = Transaction.objects.all()
+    transaction_str = "\n".join([f"- {t.date} - ${t.amount} - {t.category} - {t.description}" for t in transactions])
+    return transaction_str
+
+@sync_to_async
+def get_transaction_by_id(id):
+    transaction = Transaction.objects.get(id=id)
+    return f"- {transaction.date} - ${transaction.amount} - {transaction.category} - {transaction.description}"
+
 def get_context(request):
     if request.method == "GET":
         try:
@@ -148,3 +158,7 @@ def get_context(request):
         except Exception as e:
             return JsonResponse({"error": f"Failed to get context to database: {str(e)}"}, status=400)
     return JsonResponse({"error": "Invalid HTTP method."}, status=405)
+
+@sync_to_async
+def get_context_str()->str:
+    return Context.objects.all()[0].context

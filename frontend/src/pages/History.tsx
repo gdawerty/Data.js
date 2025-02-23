@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Accordion, Form, Button, Card, ListGroup, Badge, Modal } from "react-bootstrap";
+import { Accordion, Form, Button, Card, ListGroup, Badge, Modal, Spinner } from "react-bootstrap";
 import "./History.css";
-
+import { Lightbulb } from "@mui/icons-material";
 interface Transaction {
   id: number;
   date: string;
@@ -30,6 +30,10 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
   });
 
   const [showModal, setShowModal] = useState(false); // State for modal visibility
+  const [showAIInsight, setShowAIInsight] = useState(false); // State for AI insight visibility
+  const [AIInsightId, setAIInsightId] = useState<number | null>(null); // State for AI insight ID
+  const [AIInsightLoading, setAIInsightLoading] = useState(false); // State for AI insight loading
+  const [AIInsightResponse, setAIInsightResponse] = useState<string | null>(null); // State for AI insight response
   const [newTransaction, setNewTransaction] = useState<Partial<Transaction>>({
     date: new Date().toISOString(),
     amount: "0",
@@ -40,6 +44,35 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
 
   const [transactions, setTransactions] = useState<Transaction[]>([]); // State for transactions
   const [categories, setCategories] = useState<string[]>([]); // State for unique categories
+
+  useEffect(() => {
+    if (AIInsightId == null) {
+      return;
+    }
+    const fetchAIInsight = async () => {
+      try {
+        setAIInsightLoading(true);
+        const response = await fetch(`http://localhost:8000/api/transaction_insight`,{
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: AIInsightId }),
+        });
+        if (!response.ok) {
+          throw new Error("Failed to fetch AI insight");
+        }
+        const data = await response.json();
+        setAIInsightResponse(data.response);
+        setAIInsightLoading(false);
+        console.log("AI Insight:", data);
+      } catch (error) {
+        console.error("Error fetching AI insight:", error);
+      }
+    }
+
+    fetchAIInsight();
+  }, [AIInsightId]);
 
   // Fetch transactions from the API
   useEffect(() => {
@@ -54,7 +87,7 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
 
         // Extract unique categories for the filter dropdown
         const uniqueCategories = Array.from(new Set(data.expenses.map((t: Transaction) => t.category)));
-        setCategories(uniqueCategories);
+        setCategories(uniqueCategories as string[]);
       } catch (error) {
         console.error("Error fetching transactions:", error);
       }
@@ -67,6 +100,13 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
 
   // Handle closing the modal
   const handleCloseModal = () => setShowModal(false);
+
+  const handleShowAIInsight = () => setShowAIInsight(true);
+  const handleCloseAIInsight = () => {
+    setShowAIInsight(false)
+    setAIInsightId(null);
+    setAIInsightResponse(null);
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -152,7 +192,7 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
                 type="text"
                 name="description"
                 value={newTransaction.description}
-                onChange={handleInputChange}
+                onChange={handleInputChange as any}
                 required
                 className={isDarkMode ? "bg-secondary text-light" : ""}
               />
@@ -164,7 +204,7 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
                 type="number"
                 name="amount"
                 value={newTransaction.amount}
-                onChange={handleInputChange}
+                onChange={handleInputChange as any}
                 required
                 className={isDarkMode ? "bg-secondary text-light" : ""}
               />
@@ -193,7 +233,7 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
                 type="date"
                 name="date"
                 value={newTransaction.date}
-                onChange={handleInputChange}
+                onChange={handleInputChange as any}
                 required
                 className={isDarkMode ? "bg-secondary text-light" : ""}
               />
@@ -211,8 +251,54 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
         </Modal.Footer>
       </Modal>
 
+      {/* SHOW AI INSIGHT */}
+      <Modal show={showAIInsight} onHide={handleCloseAIInsight} centered size="lg">
+        <Modal.Header closeButton className={isDarkMode ? "bg-dark text-light" : ""}>
+          <Modal.Title>
+            <Lightbulb 
+            style={{
+              marginRight: "10px",
+              marginBottom: "6px"
+            }}
+            />
+            View Transaction Insight
+            </Modal.Title>
+        </Modal.Header>
+        <Modal.Body className={isDarkMode ? "bg-dark text-light" : ""}>
+          {
+            AIInsightLoading ? (
+              <div className="text-center">
+                <Spinner 
+                animation="border" role="status" 
+                style={{
+                  width: "100px",
+                  height: "100px",
+                  padding: "20px"
+                }}
+                />
+                <p>Loading AI insight...</p>
+              </div>
+            ) : AIInsightResponse ? (
+              <p
+                style={{
+                  whiteSpace: "pre-wrap",
+                }}
+              >{AIInsightResponse}
+              </p>
+            ) : (
+              <p>No AI insight available for this transaction.</p>
+            )
+          }
+        </Modal.Body>
+        <Modal.Footer className={isDarkMode ? "bg-dark text-light" : ""}>
+          <Button variant="secondary" onClick={handleCloseAIInsight}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
       {/* Grey Overlay */}
-      {showModal && (
+      {(showModal || showAIInsight) && (
         <div
           style={{
             position: "fixed",
@@ -248,7 +334,7 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
                 </Form.Group>
 
                 <Form.Group className="d-flex align-items-center">
-                  <Form.Label className="me-2 mb-0">Category:</Form.Label>
+                  <Form.Label className="me-2 mb-0">Income/Expense:</Form.Label>
                   <Form.Select
                     className={`form-control w-auto ${isDarkMode ? "bg-secondary text-light" : ""}`}
                     value={filters.isExpense === null ? "" : filters.isExpense ? "expense" : "income"}
@@ -323,8 +409,8 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
                       <Accordion.Item eventKey={week}>
                         <Accordion.Header>
                           {/* TODO: Week and dates of week */}
-                          {week} 
-                          </Accordion.Header>
+                          {week}
+                        </Accordion.Header>
                         <Accordion.Body>
                           {Object.entries(days)
                             .sort(([dayA], [dayB]) => new Date(dayB).getTime() - new Date(dayA).getTime()) // Sort days in descending order
@@ -346,9 +432,23 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
                                             <br />
                                             <small>{transaction.category}</small>
                                           </div>
-                                          <Badge bg={transaction.is_expense ? "danger" : "success"}>
-                                            {transaction.is_expense ? "-" : "+"}${transaction.amount}
-                                          </Badge>
+                                          <div className="transaction-actions">
+                                            <Button
+                                              variant="outline-primary"
+                                              style={{
+                                                marginRight: "10px",
+                                              }}
+                                              onClick={() => {
+                                                setAIInsightId(transaction.id);
+                                                handleShowAIInsight();
+                                              }}
+                                            >
+                                              <Lightbulb />
+                                            </Button>
+                                            <Badge bg={transaction.is_expense ? "danger" : "success"}>
+                                              {transaction.is_expense ? "-" : "+"}${transaction.amount}
+                                            </Badge>
+                                          </div>
                                         </ListGroup.Item>
                                       ))}
                                     </ListGroup>
