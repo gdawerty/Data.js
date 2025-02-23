@@ -26,7 +26,9 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
   const [AIInsightId, setAIInsightId] = useState<number | null>(null); // State for AI insight ID
   const [AIInsightLoading, setAIInsightLoading] = useState(false); // State for AI insight loading
   const [AIInsightResponse, setAIInsightResponse] = useState<string | null>(null); // State for AI insight response
-  const [newTransaction, setNewTransaction] = useState<Partial<Transaction>>({
+  const [newTransaction, setNewTransaction] = useState<Transaction>({
+    id: 0,
+    user_id: 1,
     date: new Date().toISOString(),
     amount: "0",
     is_expense: true,
@@ -57,7 +59,6 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
         const data = await response.json();
         setAIInsightResponse(data.response);
         setAIInsightLoading(false);
-        console.log("AI Insight:", data);
       } catch (error) {
         console.error("Error fetching AI insight:", error);
       }
@@ -112,7 +113,25 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Add the new transaction to the list (for now, just log it)
-    console.log("New Transaction:", newTransaction);
+    const newTransactionData = {
+      amount: parseFloat(newTransaction.amount || "0"),
+      category: newTransaction.category || "",
+      is_expense: newTransaction.is_expense ? 1 : 0,
+      date: newTransaction.date,
+      description: newTransaction.description || "",
+    }
+    console.log("Adding transaction:", newTransactionData);
+    try {
+      fetch("http://localhost:8000/api/post_transaction", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newTransactionData),
+      })
+    } catch (error) {
+      console.error("Error adding transaction:", error);
+    }
     handleCloseModal(); // Close the modal
   };
 
@@ -200,6 +219,19 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
                 required
                 className={isDarkMode ? "bg-secondary text-light" : ""}
               />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Type</Form.Label>
+              <Form.Select
+                name="is_expense"
+                value={newTransaction.is_expense}
+                onChange={handleInputChange as any}
+                required
+                className={isDarkMode ? "bg-secondary text-light" : ""}
+              >
+                <option value="true">Expense</option>
+                <option value="false">Income</option>
+              </Form.Select>
             </Form.Group>
 
             <Form.Group className="mb-3">
