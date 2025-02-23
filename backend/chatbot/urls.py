@@ -1,8 +1,7 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from django.views.decorators.csrf import csrf_exempt
-from .views import chatbot, transaction_insight, post_transaction, post_context, get_transaction, get_context, pattern_recognition
-from .views import chatbot, transaction_insight, post_transaction, post_context, get_transaction, get_context, get_market_news
+from .views import chatbot, transaction_insight, post_transaction, post_context, get_transaction, get_context, pattern_recognition, get_market_news
 
 urlpatterns = [
     path('api/chatbot/', csrf_exempt(chatbot), name='chatbot'),
