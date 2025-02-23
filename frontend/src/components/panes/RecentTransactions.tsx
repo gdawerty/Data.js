@@ -1,75 +1,42 @@
 import React from "react";
 import Pane from "../Pane";
 import { Table, Badge } from "react-bootstrap";
-
-interface Transaction {
-  id: number;
-  dateTime: string;
-  amount: number;
-  isExpense: boolean;
-  type: string;
-  description: string;
-}
+import Transaction from "../../types/Transaction";
 
 interface RecentTransactionsProps {
   isDarkMode: boolean;
   title: string;
+  transactions: Transaction[];
 }
 
-const RecentTransactions: React.FC<RecentTransactionsProps> = ({ isDarkMode, title }) => {
-  const transactions: Transaction[] = [
-    {
-      id: 1,
-      dateTime: "2025-02-21T12:00:00Z",
-      amount: 100,
-      isExpense: true,
-      type: "Food",
-      description: "Groceries",
-    },
-    {
-      id: 2,
-      dateTime: "2025-02-20T12:00:00Z",
-      amount: 50,
-      isExpense: true,
-      type: "Transport",
-      description: "Bus fare",
-    },
-    {
-      id: 3,
-      dateTime: "2025-02-19T12:00:00Z",
-      amount: 2000,
-      isExpense: false,
-      type: "Income",
-      description: "Salary",
-    },
-  ];
+const RecentTransactions: React.FC<RecentTransactionsProps> = ({ isDarkMode, title, transactions }) => {
 
-  const getRelativeTime = (dateTime: string): string => {
-    const date = new Date(dateTime);
-    const now = new Date();
-
-    const diff = now.getTime() - date.getTime();
-    const seconds = Math.floor(diff / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-
-    if (days > 0) {
-      return `${days}d ago`;
-    } else if (hours > 0) {
-      return `${hours}h ago`;
-    } else if (minutes > 0) {
-      return `${minutes}m ago`;
+  const getRelativeTime = (date: string): string => {
+    // Format: YYYY-MM-DD
+    const currentDate = new Date();
+    const transactionDate = new Date(date);
+    const diff = currentDate.getTime() - transactionDate.getTime();
+    const diffDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+    if (diffDays === 0) {
+      return "Today";
+    } else if (diffDays === 1) {
+      return "Yesterday";
     } else {
-      return `${seconds}s ago`;
+      return `${diffDays} days ago`;
     }
   }
 
   return (
-    <Pane title={title} width={400} isDarkMode={isDarkMode}>
-      <Table striped bordered hover variant={isDarkMode ? "dark" : "light"} style={{
-        maxWidth: 400,
-      }}>
+    <Pane title={title} width={500} isDarkMode={isDarkMode}>
+      <Table
+        striped
+        bordered
+        hover
+        variant={isDarkMode ? "dark" : "light"}
+        style={{
+          width: 450,
+        }}
+      >
         <thead>
           <tr>
             <th>Date</th>
@@ -81,15 +48,13 @@ const RecentTransactions: React.FC<RecentTransactionsProps> = ({ isDarkMode, tit
         <tbody>
           {transactions.map((transaction) => (
             <tr key={transaction.id}>
-              <td>{getRelativeTime(transaction.dateTime)}</td>
+              <td>{getRelativeTime(transaction.date)}</td>
               <td>
-                <Badge bg={transaction.isExpense ? "danger" : "success"}>
-                  {transaction.isExpense ? "-" : "+"}${
-                  transaction.amount.toFixed(2)
-                  }
+                <Badge bg={transaction.is_expense ? "danger" : "success"}>
+                  {transaction.is_expense ? "-" : "+"}${transaction.amount as unknown as number}
                 </Badge>
               </td>
-              <td>{transaction.type}</td>
+              <td>{transaction.category}</td>
               <td>{transaction.description}</td>
             </tr>
           ))}

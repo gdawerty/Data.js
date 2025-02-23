@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import CustomNavbar from "./components/NavBar";
 import Sidebar from "./components/SideBar";
-// import Footer from "./components/Footer";
+import Footer from "./components/Footer";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -10,10 +10,10 @@ import Chat from "./pages/Chat";
 import History from "./pages/History";
 import Insights from "./pages/Insights";
 import Planning from "./pages/Planning";
+import About from "./pages/About";
 
 const App: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
-
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
     document.body.classList.toggle("dark-mode", !isDarkMode);
@@ -24,11 +24,13 @@ const App: React.FC = () => {
       <CustomNavbar toggleTheme={toggleTheme} isDarkMode={isDarkMode} />
       <div className="d-flex">
         <Sidebar isDarkMode={isDarkMode} />
-        <main className="flex-grow-1 p-3" style={{ backgroundColor: isDarkMode ? "#1d222b" : "#eef1fb" }}>
+        <main className="flex-grow-1 p-3" style={{ backgroundColor: isDarkMode ? "#1d222b" : "#eef1fb", marginTop: "30px"}}>
           <Router>
             <Routes>
               <Route path="/" element={<Dashboard isDarkMode={isDarkMode} />} />
+
               <Route path="/dashboard" element={<Dashboard isDarkMode={isDarkMode} />} />
+              <Route path="/about" element={<About />} />
               <Route path="/chat" element={<Chat isDarkMode={isDarkMode} />} />
               <Route path="/insights" element={<Insights />} />
               <Route path="/history" element={<History isDarkMode={isDarkMode} />} />
@@ -37,7 +39,7 @@ const App: React.FC = () => {
           </Router>
         </main>
       </div>
-      {/* <Footer isDarkMode={isDarkMode} /> */}
+      <Footer isDarkMode={isDarkMode} />
     </div>
   );
 };
