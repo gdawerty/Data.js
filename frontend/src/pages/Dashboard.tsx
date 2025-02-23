@@ -19,7 +19,7 @@ const Dashboard: React.FC<DashboardProps> = ({ isDarkMode }) => {
   const [expenseCategories, setExpenseCategories] = useState<string[]>([]);
   const [incomeCategories, setIncomeCategories] = useState<string[]>([]);
   const [spendingInsights, setSpendingInsight] = useState<string>("");
-  const [displayedInsight, setDisplayedInsight] = useState<string>("");
+  // const [displayedInsight, setDisplayedInsight] = useState<string>("");
 
 
   const data = [
@@ -88,7 +88,7 @@ const Dashboard: React.FC<DashboardProps> = ({ isDarkMode }) => {
 
       const interval = setInterval(() => {
         if (index < words.length) {
-          setDisplayedInsight((prev) => prev + (prev ? " " : "") + words[index]);
+          // setDisplayedInsight((prev) => prev + (prev ? " " : "") + words[index]);
           index++;
         } else {
           clearInterval(interval);

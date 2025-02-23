@@ -1,4 +1,3 @@
-import { SvgIconComponent } from "@mui/icons-material";
 import { VictoryChart } from "victory";
 import { ReactElement } from "react";
 

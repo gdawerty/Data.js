@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { VictoryLine, VictoryChart, VictoryTheme, VictoryAxis, VictoryArea } from "victory";
 import Pane from "../Pane";
 import Transaction from "../../types/Transaction";

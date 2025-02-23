@@ -1,7 +1,6 @@
 import React from "react";
 import Pane from "../Pane";
 import { Card } from "react-bootstrap";
-import { VictoryBar, VictoryChart, VictoryAxis, VictoryTheme } from "victory";
 import Insight from "../../types/Insight";
 interface InsightPaneProps {
   isDarkMode: boolean;

@@ -1,5 +1,5 @@
-import React, {use, useEffect} from "react";
-import { VictoryLabel, VictoryPie, VictoryTheme, VictoryTooltip } from "victory";
+import React, {useEffect} from "react";
+import { VictoryPie, VictoryTheme, VictoryTooltip } from "victory";
 import Pane from "../Pane";
 import Transaction from "../../types/Transaction";
 

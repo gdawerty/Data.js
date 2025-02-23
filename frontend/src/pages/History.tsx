@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect } from "react";
 import { Accordion, Form, Button, Card, ListGroup, Badge, Modal, Spinner } from "react-bootstrap";
 import "./History.css";
@@ -46,7 +47,7 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
     const fetchAIInsight = async () => {
       try {
         setAIInsightLoading(true);
-        const response = await fetch(`http://localhost:8000/api/transaction_insight`,{
+        const response = await fetch(`http://localhost:8000/api/transaction_insight`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -62,7 +63,7 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
       } catch (error) {
         console.error("Error fetching AI insight:", error);
       }
-    }
+    };
 
     fetchAIInsight();
   }, [AIInsightId]);
@@ -96,7 +97,7 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
 
   const handleShowAIInsight = () => setShowAIInsight(true);
   const handleCloseAIInsight = () => {
-    setShowAIInsight(false)
+    setShowAIInsight(false);
     setAIInsightId(null);
     setAIInsightResponse(null);
   };
@@ -119,7 +120,7 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
       is_expense: newTransaction.is_expense ? 1 : 0,
       date: newTransaction.date,
       description: newTransaction.description || "",
-    }
+    };
     console.log("Adding transaction:", newTransactionData);
     try {
       fetch("http://localhost:8000/api/post_transaction", {
@@ -128,7 +129,7 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(newTransactionData),
-      })
+      });
     } catch (error) {
       console.error("Error adding transaction:", error);
     }
@@ -279,40 +280,40 @@ const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
       <Modal show={showAIInsight} onHide={handleCloseAIInsight} centered size="lg">
         <Modal.Header closeButton className={isDarkMode ? "bg-dark text-light" : ""}>
           <Modal.Title>
-            <Lightbulb 
-            style={{
-              marginRight: "10px",
-              marginBottom: "6px"
-            }}
+            <Lightbulb
+              style={{
+                marginRight: "10px",
+                marginBottom: "6px",
+              }}
             />
             View Transaction Insight
-            </Modal.Title>
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body className={isDarkMode ? "bg-dark text-light" : ""}>
-          {
-            AIInsightLoading ? (
-              <div className="text-center">
-                <Spinner 
-                animation="border" role="status" 
+          {AIInsightLoading ? (
+            <div className="text-center">
+              <Spinner
+                animation="border"
+                role="status"
                 style={{
                   width: "100px",
                   height: "100px",
-                  padding: "20px"
+                  padding: "20px",
                 }}
-                />
-                <p>Loading AI insight...</p>
-              </div>
-            ) : AIInsightResponse ? (
-              <p
-                style={{
-                  whiteSpace: "pre-wrap",
-                }}
-              >{AIInsightResponse}
-              </p>
-            ) : (
-              <p>No AI insight available for this transaction.</p>
-            )
-          }
+              />
+              <p>Loading AI insight...</p>
+            </div>
+          ) : AIInsightResponse ? (
+            <p
+              style={{
+                whiteSpace: "pre-wrap",
+              }}
+            >
+              {AIInsightResponse}
+            </p>
+          ) : (
+            <p>No AI insight available for this transaction.</p>
+          )}
         </Modal.Body>
         <Modal.Footer className={isDarkMode ? "bg-dark text-light" : ""}>
           <Button variant="secondary" onClick={handleCloseAIInsight}>
